@@ -38,6 +38,8 @@ void displaymap(){
 	 ST7735_FillScreen(0);            // set screen to black
 	 ST7735_OutString("Lab 7!\nWelcome to EE319K");
 	ST7735_SetCursor(0,0);
+	
+
 }
 void displayradar(){
 }
