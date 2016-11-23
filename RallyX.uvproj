@@ -7,7 +7,7 @@
 
   <Targets>
     <Target>
-      <TargetName>SpaceInvaders</TargetName>
+      <TargetName>RallyX</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <TargetOption>
@@ -170,7 +170,7 @@
             <Capability>1</Capability>
             <DriverSelection>4097</DriverSelection>
           </Flash1>
-          <bUseTDR>0</bUseTDR>
+          <bUseTDR>1</bUseTDR>
           <Flash2>BIN\lmidk-agdi.dll</Flash2>
           <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
@@ -451,11 +451,6 @@
               <FilePath>.\Print.s</FilePath>
             </File>
             <File>
-              <FileName>SpaceInvaders.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\SpaceInvaders.c</FilePath>
-            </File>
-            <File>
               <FileName>ST7735.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\ST7735.c</FilePath>
@@ -464,6 +459,36 @@
               <FileName>tm4c123gh6pm.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\tm4c123gh6pm.h</FilePath>
+            </File>
+            <File>
+              <FileName>RallyX.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\RallyX.c</FilePath>
+            </File>
+            <File>
+              <FileName>Display.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Display.c</FilePath>
+            </File>
+            <File>
+              <FileName>PlayGame.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\PlayGame.c</FilePath>
+            </File>
+            <File>
+              <FileName>Display.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Display.h</FilePath>
+            </File>
+            <File>
+              <FileName>PlayGame.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\PlayGame.h</FilePath>
+            </File>
+            <File>
+              <FileName>IO.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\IO.s</FilePath>
             </File>
           </Files>
         </Group>

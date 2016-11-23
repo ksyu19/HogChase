@@ -1,6 +1,6 @@
 ; LCD.s
-; Student names: change this to your names or look very silly
-; Last modification date: change this to the last modification date or look very silly
+; Student names: Karena Yu and Alex Smith
+; Last modification date: 11-09-16
 
 ; Runs on LM4F120/TM4C123
 ; Use SSI0 to send an 8-bit code to the ST7735 160x128 pixel LCD.
@@ -19,6 +19,9 @@
 ; VCC (pin 2) connected to +3.3 V
 ; Gnd (pin 1) connected to ground
 
+DC                      EQU   0x40004100
+DC_COMMAND              EQU   0
+DC_DATA                 EQU   0x40
 GPIO_PORTA_DATA_R       EQU   0x400043FC
 SSI0_DR_R               EQU   0x40008008
 SSI0_SR_R               EQU   0x4000800C
@@ -57,13 +60,26 @@ SSI_SR_TNF              EQU   0x00000002  ; SSI Transmit FIFO Not Full
 ; Assumes: SSI0 and port A have already been initialized and enabled
 writecommand
 ;1) Read SSI0_SR_R and check bit 4, 
+	LDR R1, =SSI0_SR_R
+wcstep1
+	LDR R2, [R1]
+	ANDS R2, #0x10
 ;2) If bit 4 is high, loop back to step 1 (wait for BUSY bit to be low)
+	BNE wcstep1
 ;3) Clear D/C=PA6 to zero
+	LDR R1, =DC ;bit specific addressing for PA6
+	MOV R2, #0
+	STR R2, [R1] 
 ;4) Write the command to SSI0_DR_R
+	LDR R1, =SSI0_DR_R
+	STRB R0, [R1]
 ;5) Read SSI0_SR_R and check bit 4, 
+	LDR R1, =SSI0_SR_R
+wcstep5
+	LDR R2, [R1]
+	ANDS R2, #0x10
 ;6) If bit 4 is high, loop back to step 5 (wait for BUSY bit to be low)
-
-    
+	BNE wcstep5
     
     BX  LR                          ;   return
 
@@ -73,12 +89,21 @@ writecommand
 ; Assumes: SSI0 and port A have already been initialized and enabled
 writedata
 ;1) Read SSI0_SR_R and check bit 1, 
+	LDR R1, =SSI0_SR_R
+wdstep1
+	LDR R2, [R1]
+	ANDS R2, #0x02
 ;2) If bit 1 is low loop back to step 1 (wait for TNF bit to be high)
+	BEQ wdstep1
 ;3) Set D/C=PA6 to one
+	LDR R1, =DC ;bit specific addressing for PA6
+	LDR R2, [R1]
+	ORR R2, #0x40
+	STR R2, [R1]
 ;4) Write the 8-bit data to SSI0_DR_R
-
-    
-    
+	LDR R1, =SSI0_DR_R 
+	STRB R0, [R1]
+	
     BX  LR                          ;   return
 
 
