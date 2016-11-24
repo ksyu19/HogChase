@@ -6,99 +6,140 @@
 
 #include <stdint.h>
 #include "Display.h"
-typedef enum {NORTH,EAST,SOUTH,WEST}direction_t ; 
+#define WOLVES_SIZE 3 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!adjust later (might depend on difficulty)
+#define FLAGS_TOTAL 10 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!adjust later
+
+typedef enum {NORTH,EAST,SOUTH,WEST} direction_t;
+typedef enum {PAUSE,RESUME,QUIT} buttons;//implement later!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 typedef struct actor{
 	int x;
 	int y;
 	int speed;
 	direction_t direction;
 }actorType;
-/*int getX(){
-}
-int getY(){
-}
-int getSpeed(){
-}
-int getDirection(){
-}
-void setX(){
-}
-void setY(){
-}
-void setSpeed(){
-}
-void setDirection(){
-}*/
+typedef struct flag{
+	int x; // x = -1 when flag has been collected
+	int y;
+}flagType;
 
-actorType pig = {0,0,0,NORTH};
-actorType Wolves[3] = {{0,0,0,NORTH},{0,0,0,NORTH},{0,0,0,NORTH}};
-int lives = 3;
-int winlose = 0;//0 = lose, 1 = win
-int flags = 0;
+actorType pig; 
+actorType Wolves[WOLVES_SIZE];
+flagType Flags[FLAGS_TOTAL];
+int lives;
+int winlose;
+int flagcount;
+int time;
+
+void PlayGameInit(void){//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11!fix locations speed direction later!!!!
+	pig.x = 0;
+	pig.y = 0;
+	pig.speed = 0;
+	pig.direction = NORTH;
+	for (int i = 0; i<WOLVES_SIZE; i++){
+		Wolves[i].x = 0;
+		Wolves[i].y = 0;
+		Wolves[i].speed = 0;
+		Wolves[i].direction = NORTH;
+	}
+	time = 10; //need Systick to decrement time!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+}
+
 int checkCanMove(direction_t dir){
 	int move;//0 = can't move, 1 = can move
+	//check if path available!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	return move;	
 }
+
 void move(actorType *p){
-	if ((*p).direction == NORTH){
-		if(checkCanMove(NORTH)){
-			(*p).y += (*p).speed;
-		}
-	}//moveNorth
-	if ((*p).direction == EAST){
-		if(checkCanMove(EAST)){
-			(*p).x += (*p).speed;
-		}
-	}//moveEast
-	if ((*p).direction == SOUTH){
-		if(checkCanMove(SOUTH)){
-			(*p).y -= (*p).speed;
-		}
-	}//moveSouth
-	if ((*p).direction == WEST){
-		if(checkCanMove(WEST)){
-			(*p).x -= (*p).speed;
-		}
-	}//moveWest
+	if (checkCanMove(p->direction)){	
+		switch(p->direction){
+			case NORTH:
+				(*p).y += (*p).speed;
+				break;
+			case EAST:
+				(*p).x += (*p).speed;
+				break;
+			case SOUTH:
+				(*p).y -= (*p).speed;
+				break;
+			case WEST:
+				(*p).x -= (*p).speed;
+				break;
+		}//switch
+	}
 }//move
+
 direction_t findbestpath(){
 	direction_t best;
+	//find the best path!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	return best;
 }
 void moveEnemy(actorType *wolf){
 	direction_t dir;
-	dir = findbestpath();//adjust later for difficulty
+	dir = findbestpath();//adjust later for difficulty!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	(*wolf).direction = dir;
 	move(wolf);
 }//moveEnemy
+
 void updatemap(){
+	//update the map!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	//if flag[i] == -1, then do not display
 }
 void updateradar(){
+	//update the radar!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	//if flag[i] == -1, then do not display
+}
+void flagInit(){
+	for (int i = 0; i < FLAGS_TOTAL; i++){
+		Flags[i].x = 0;
+		Flags[i].y = 0;
+	}
+	//initialize location of flags!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+}
+void collideWolves(actorType *wolf){
+	if((pig.x == wolf->x&&pig.y == wolf->y))
+	{
+		lives--;
+		PlayGameInit();//reset actors and time
+	}//rough collision detection with wolves -- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1fix later, maybe add rocks/obstacles
+}
+void collideFlags(flagType *f){
+	if(f->x!=-1){
+		if((pig.x==f->x)&&(pig.y==f->y)){
+			flagcount++;
+			f->x = -1;
+		}
+	}
 }
 int playgame(int difficulty){
-		displaymap();
-		displayradar();
-		move(&pig);
-		move(&Wolves[0]);
-		move(&Wolves[1]);
-		move(&Wolves[2]);
-		if((pig.x == Wolves[0].x&&pig.y == Wolves[0].y)||(pig.x == Wolves[1].x&&pig.y == Wolves[1].y)||(pig.x == Wolves[2].x&&pig.y == Wolves[2].y))
-		{
-			//decrement lives
-			//reset position
-			//reset time
-		}//rough collision detection
-		updatemap();
-		updateradar();
-		if(lives == 0){
-			winlose = 0;
-			return winlose;
-		}
-		if (flags == 10){
-			winlose = 1;
-			return winlose;
-		}
-		//time
+		PlayGameInit();
+		lives = 3;
+		winlose = -1;//0 = lose, 1 = win
+		flagcount = 0;
+		flagInit();
+		while (winlose==-1){
+			displaymap();
+			displayradar();
+			//user input!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!add an interrupt that changes pig's direction when user presses button, if possible to face in that direction
+			move(&pig);
+			for (int i = 0; i<WOLVES_SIZE; i++){
+				move(&Wolves[i]);
+				collideWolves(&Wolves[i]);
+			}
+			for(int i = 0; i< FLAGS_TOTAL; i++){
+				collideFlags(&Flags[i]);
+			}
+			updatemap();
+			updateradar();
+			if(lives == 0){
+				winlose = 0;
+				return winlose;
+			}
+			if (flagcount == 10){
+				winlose = 1;
+				return winlose;
+			}
+		}//while
 		return -1;
 }
 
