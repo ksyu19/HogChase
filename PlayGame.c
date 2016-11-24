@@ -1,4 +1,4 @@
-// FiFo.c
+// PlayGame.c
 // Runs on LM4F120/TM4C123
 // Provide functions that implement the Software FiFo Buffer
 // Student names: Alex Smith and Karena Yu
@@ -143,16 +143,11 @@ int playgame(int difficulty){
 		return -1;
 }
 
-/*==================================================================================================================================
-GLOBALS:
-====================================================================================================================================*/
-const int MAXFUEL = 100;
-
 /*===================================================================================================================================
 VECTOR FUNCTIONS:
 These are so that we can later move our sprites when we interface with the joystick.
 =================================================================================================================================*/
-typedef struct 
+/*typedef struct 
 {
 	float x, y; 
 	
@@ -180,26 +175,18 @@ void initVect (vector2 *vect, float x, float y)
 	vect->y = y;
 }
 
-
+*/
 /*===================================================================================================================================
 PLAYER: This is where the character info is bundled and vectors can be dealt with.
 =====================================================================================================================================*/
-typedef struct 
+/*typedef struct 
 {
 	vector2 position; //coordinates of player
 	vector2 direction; 
 	//add a pointer to bitmap info
-	short alive; //1 if alive, 0 if dead
-	unsigned short fuel; //to check for scoring, speed, and life purposes.
-	
 }player;
+*/
 
-void initPlayer (player *player1)
-{
-	player1->alive = 1;
-	player1->fuel = MAXFUEL;
-	
-}
 uint32_t map1[32][40] = 
 {
 {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -237,7 +224,5 @@ uint32_t map1[32][40] =
 }; 
 /*This is just the level one map. I have the other two in notepad files, but I need them to be inits, so I'll have to change
     the  lettters to numbers to represent walls, spaces, flags, rocks, and cars.*/
-
-
 
 
