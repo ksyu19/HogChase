@@ -1,0 +1,279 @@
+/*=====================================================
+ENTITY
+=====================================================*/
+const short maxFuel =  20;
+typedef enum { PLAYER, PIG, COW, CHICKEN } entityType;
+typedef struct
+{
+	Vector2 position;
+	dir curDir;
+	float speed;
+	short fuel;
+	float radius;
+	entityType type;
+} entity;
+
+//--------------------------------------------------------------------
+void initializeEntity(entity* ent)
+{
+	
+};
+
+/*======================================================================
+COLLISION DETECTION
+======================================================================*/
+int collideWithWalls(entity* ent, short** levelData)
+{
+	//Every tile occupies a space of 16x16
+	short i, j;
+	
+	//Check if center collides
+	i = ent->position.y / 16;
+	j = ent->position.x / 16;
+	if ( levelData[i][j] == 1 )
+	{
+		return 1;
+	}
+	
+	//Check if top collides
+	i = (ent->position.y - ent->radius) / 16;
+	j = ent->position.x / 16;
+	if ( levelData[i][j] == 1 )
+	{
+		return 1;
+	}
+	
+	//Check if bottom collides
+	i = (ent->position.y + ent->radius) / 16;
+	j = ent->position.x / 16;
+	if ( levelData[i][j] == 1 )
+	{
+		return 1;
+	}
+	
+	//Check if left collides
+	i = ent->position.y / 16;
+	j = (ent->position.x - ent->radius) / 16;
+	if ( levelData[i][j] == 1 )
+	{
+		return 1;
+	}
+	
+	//Check if right collides
+	i = ent->position.y / 16;
+	j = (ent->position.x + ent->radius) / 16;
+	if ( levelData[i][j] == 1 )
+	{
+		return 1;
+	}
+	
+	return 0;
+};
+//-----------------------------------------------
+int collideWithBoulder(entity* ent, short** levelData)
+{
+	//Every tile occupies a space of 16x16
+	short i, j;
+	
+	//Check if center collides
+	i = ent->position.y / 16;
+	j = ent->position.x / 16;
+	if ( levelData[i][j] == 3 )
+	{
+		return 1;
+	}
+	
+	//Check if top collides
+	i = (ent->position.y - ent->radius) / 16;
+	j = ent->position.x / 16;
+	if ( levelData[i][j] == 3 )
+	{
+		return 1;
+	}
+	
+	//Check if bottom collides
+	i = (ent->position.y + ent->radius) / 16;
+	j = ent->position.x / 16;
+	if ( levelData[i][j] == 3 )
+	{
+		return 1;
+	}
+	
+	//Check if left collides
+	i = ent->position.y / 16;
+	j = (ent->position.x - ent->radius) / 16;
+	if ( levelData[i][j] == 3 )
+	{
+		return 1;
+	}
+	
+	//Check if right collides
+	i = ent->position.y / 16;
+	j = (ent->position.x + ent->radius) / 16;
+	if ( levelData[i][j] == 3 )
+	{
+		return 1;
+	}
+	
+	return 0;
+};
+//---------------------------------------------------------
+short entitiesColliding(entity* ent1, entity* ent2)
+{
+	Vector2 distance;
+		distance.x = abs(ent1->position.x -  ent2->position.x);
+		distance.y = abs(ent1->position.y -  ent2->position.y);
+		
+	if (magnitude(distance) < ent1->radius + ent2->radius)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+/*======================================================================
+LEVEL STUFF
+=======================================================================*/
+const short row = 32;
+const short col = 40;
+
+//Loads level data hard coded
+short** loadLevel(short levelNum)
+{
+	short levDat[row][col];
+	if (levelNum == 1)
+	{
+		
+	}
+	else if (levelNum == 2)
+	{
+	
+	}
+	else if (levelNum == 3)
+	{
+	
+	}
+	else
+	{
+		//???????
+	}
+	return levDat;
+};
+
+/*=====================================================================
+GAME
+=====================================================================*/
+typedef dir{NORTH, EAST, SOUTH, WEST} enum;
+typedef struct
+{
+	float deltaTime; //Store time since last game update
+	short level; //Which level currently on
+	level levelData[3]; //Level datas
+	
+	//Entities
+	entity* enemies; //Array of enemies
+	entity* player; //Player
+
+} game;
+
+//------------------------------------------
+void initialize Game(game* G)
+{
+
+};
+
+//------------------------------------------
+void initializeLevels(game* G);
+{
+	int i;
+	for (i = 0; i < 3; i++)
+	{
+		G->levelData[i] = loadLevel(i+1);
+	}
+};
+
+//------------------------------------------
+void initializeEntities(game* G)
+{
+	//Create Enemies Data
+	G->enemies = (entity*) malloc((2+level)*sizeof(entity*));
+};
+//-------------------------------------------
+void clearFrame()
+{
+	//Blank all the pixels
+
+}
+//-------------------------------------------
+void renderEntity(entity* ent)
+{
+	if ( ent->type == PLAYER )
+	{
+		//Draw player Bitmap at player position
+	}
+	else if ( ent->type == ENEMY )
+	{
+		//Draw enemy Bitmap at enemy position
+	}
+	else
+	{
+		//Draw nothing
+	}
+}
+//-------------------------------------------
+void renderFrame(game* G)
+{
+	//Set camera based on player position
+	short camI = G->player.y / 16;
+	short camJ = G->player.x / 16;
+	
+	//Render tiles around player
+	int i, j;
+	for (i = camI-3; i <= camI+4; i++)
+	{
+		for (j = camJ - 4; i <= camJ + 4)
+		{
+			//LOAD WALL INTO BUFFER
+			if (G->levelData[level][i][j] ==  1)
+			{
+				//DRAW WALL AT y=i*16, x=j*16
+			}
+		}
+		
+	}
+	
+	//Render Enemies
+	for (i = 0; i < 3; i++)
+	{
+		renderEntity(G->enemy[i]);
+	}
+	
+	//Render player
+	renderEntity(G->player);
+	
+	clearFrame();
+	renderBuffer();
+
+}
+
+/*=====================================================================
+INT MAIN
+======================================================================*/
+int main()
+{
+	game RallyX;
+
+	initializeGame(&RallyX);
+	
+	//Game running
+	while(1)
+	{
+		updateGame(&RallyX);
+		handleCollisions(&RallyX);
+		renderFrame(&RallyX);
+	}
+	return 0;
+}
