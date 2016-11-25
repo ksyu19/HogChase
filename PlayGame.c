@@ -6,11 +6,23 @@
 
 #include <stdint.h>
 #include "Display.h"
+#include "random.h"
+/*===================================================================================================================================
+CONSTANTS, TYPEDEFS (ENUMS, STRUCTS)
+=====================================================================================================================================*/
 #define WOLVES_SIZE 3 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!adjust later (might depend on difficulty)
 #define FLAGS_TOTAL 10 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!adjust later
-
 typedef enum {NORTH,EAST,SOUTH,WEST} direction_t;
 typedef enum {PAUSE,RESUME,QUIT} buttons;//implement later!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+typedef enum {
+	O,//open path
+	C,//closed path
+	S,//straw
+	T,//twigs
+	B,//bricks
+	P,//pig
+	W //wolf
+}mapIcons;
 typedef struct actor{
 	int x;
 	int y;
@@ -21,7 +33,9 @@ typedef struct flag{
 	int x; // x = -1 when flag has been collected
 	int y;
 }flagType;
-
+/*===================================================================================================================================
+DECLARE VARIABLES
+=====================================================================================================================================*/
 actorType pig; 
 actorType Wolves[WOLVES_SIZE];
 flagType Flags[FLAGS_TOTAL];
@@ -29,21 +43,111 @@ int lives;
 int winlose;
 int flagcount;
 int time;
+int score;
+//Level 1 Map:
+mapIcons map1[32][40] = 
+{
+{C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C},
+{C,C,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,C,C,C,C,C,C,C,C,C,O,O,O,O,O,O,O,O,O,C,C,C,C},
+{C,C,O,C,C,C,O,O,C,C,C,C,C,C,O,C,C,C,O,O,O,O,O,O,O,O,C,C,C,C,C,C,C,C,C,O,O,O,O,C},
+{C,C,O,O,O,O,O,C,C,C,C,C,C,C,C,O,C,C,C,O,C,C,C,C,C,O,O,O,O,O,O,O,O,O,O,O,C,C,O,C},
+{C,C,O,C,C,C,O,O,C,C,C,C,C,C,O,C,C,C,O,C,C,C,C,C,O,C,C,C,C,C,C,C,C,C,O,O,C,C,O,C},
+{C,C,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,O,O,C,C,C,C,C,O,C,C,C,C,C,C,C,C,C,O,C,C,O,C},
+{C,C,O,O,O,O,O,O,O,O,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,O,O,C},
+{C,C,C,C,C,C,C,C,C,O,C,C,C,C,O,O,O,O,O,O,O,O,O,O,O,C,C,C,O,C,C,C,C,C,C,C,C,C,C,C},
+{C,C,C,C,C,C,C,C,C,O,C,C,C,C,O,O,O,O,O,O,O,O,O,O,O,C,C,C,O,C,C,C,C,C,C,C,C,C,C,C},
+{C,C,O,C,C,C,O,O,O,O,O,O,O,O,O,O,C,C,C,C,C,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,C,C,C,C},
+{C,C,O,C,C,C,O,C,C,C,C,C,C,C,C,O,C,C,C,O,O,O,O,O,O,O,C,C,C,C,C,C,C,C,C,O,O,O,O,C},
+{C,C,O,O,O,O,O,C,C,C,C,C,C,C,C,O,C,C,C,O,C,C,C,C,C,O,O,O,O,O,C,C,C,C,C,O,C,C,O,C},
+{C,C,O,C,C,C,O,C,C,C,C,C,C,C,C,O,C,C,C,O,C,C,C,C,C,O,C,C,O,O,O,O,O,C,C,O,C,C,O,C},
+{C,C,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,O,O,C,C,C,C,C,O,O,O,O,C,C,C,O,C,C,O,C,C,O,C},
+{C,C,O,O,O,O,O,O,O,O,C,C,C,C,C,O,O,O,O,O,O,O,O,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,C},
+{C,C,O,C,C,C,C,C,C,O,C,C,C,C,C,C,O,C,C,C,C,C,O,C,C,C,C,C,O,O,C,C,C,C,C,O,O,O,C,C},
+{C,C,O,C,C,C,C,C,C,O,C,C,C,C,C,C,O,C,C,C,C,C,O,C,C,C,C,C,O,O,C,C,C,C,C,C,O,O,C,C},
+{C,C,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,C,C},
+{C,C,O,C,C,C,O,C,C,C,C,C,C,C,C,O,C,C,C,O,O,O,O,O,O,O,C,C,C,C,C,C,C,C,C,O,O,O,O,C},
+{C,C,O,O,O,O,O,C,C,C,C,C,C,C,C,O,C,O,C,O,C,O,C,O,C,O,O,O,O,O,O,O,O,O,O,O,C,C,O,C},
+{C,C,O,C,C,C,O,C,C,C,C,C,C,C,C,O,C,O,C,O,C,O,C,O,C,O,C,C,C,C,C,C,C,C,C,O,C,C,O,C},
+{C,C,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,C,O,C,O,C,O,C,O,C,C,C,C,C,C,C,C,C,O,C,C,O,C},
+{C,C,O,O,O,O,O,O,O,O,C,C,C,O,C,C,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,C},
+{C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C},
+{C,C,O,O,O,O,O,C,C,C,C,C,C,C,C,O,C,C,C,O,C,C,C,C,C,O,O,O,O,O,C,C,C,C,C,O,C,C,O,C},
+{C,C,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,O,O,C,C,C,C,C,O,O,O,O,C,C,C,O,C,C,O,C,C,O,C},
+{C,C,O,O,O,O,O,O,O,O,C,C,C,C,C,O,O,O,O,O,O,O,O,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,C},
+{C,C,O,O,O,O,O,C,C,C,C,C,C,C,C,O,C,O,C,O,C,O,C,O,C,O,O,O,O,O,O,O,O,O,O,O,C,C,O,C},
+{C,C,O,C,C,C,O,C,C,C,C,C,C,C,C,O,C,O,C,O,C,O,C,O,C,O,C,C,C,C,C,C,C,C,C,O,C,C,O,C},
+{C,C,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,C,O,C,O,C,O,C,O,C,C,C,C,C,C,C,C,C,O,C,C,O,C},
+{C,C,O,O,O,O,O,O,O,O,C,C,C,O,C,C,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,C},
+{C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C}
+}; 
 
-void PlayGameInit(void){//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11!fix locations speed direction later!!!!
-	pig.x = 0;
-	pig.y = 0;
-	pig.speed = 0;
-	pig.direction = NORTH;
+/*===================================================================================================================================
+INITIALIZATION FUNCTIONS (and helpers)
+=====================================================================================================================================*/
+void flagInit(int diff){
+	int m;
+	for (int i = 0; i < FLAGS_TOTAL; i++){
+		switch(diff){
+			case 1:		
+				do {
+					m = (Random()>>21)%1280; //random number from 0 to 1279
+				}while((map1[m/40][m%40]!=O));
+				Flags[i].x = m%40;//column
+				Flags[i].y = m/40;//row
+			break;
+			case 2:
+			break;
+			case 3:
+			break;
+		}//switch
+	}//for
+}//flagInit
+void PlayGameInit(int diff){//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11!fix locations speed direction later!!!!
+	switch(diff){
+		case 1://for level 1 difficulty map
+			pig.x = 20;//column in map
+			pig.y = 17;//row in map
+			pig.direction = EAST;
+			Wolves[0].x = 5;
+			Wolves[0].y = 26;
+			Wolves[1].x = 19;
+			Wolves[1].y = 26;
+			Wolves[2].x = 33;
+			Wolves[2].y = 26;
+		break;
+		case 2://for level 2 difficulty map
+			pig.x = 20;//column in map
+			pig.y = 17;//row in map
+			pig.direction = EAST;
+			Wolves[0].x = 5;
+			Wolves[0].y = 26;
+			Wolves[1].x = 19;
+			Wolves[1].y = 26;
+			Wolves[2].x = 33;
+			Wolves[2].y = 26;
+		break;
+		case 3://for level 3 difficulty map
+			pig.x = 20;//column in map
+			pig.y = 17;//row in map
+			pig.direction = EAST;
+			Wolves[0].x = 5;
+			Wolves[0].y = 26;
+			Wolves[1].x = 19;
+			Wolves[1].y = 26;
+			Wolves[2].x = 33;
+			Wolves[2].y = 26;
+		break;
+	}
+	pig.speed = 1;
 	for (int i = 0; i<WOLVES_SIZE; i++){
-		Wolves[i].x = 0;
-		Wolves[i].y = 0;
-		Wolves[i].speed = 0;
+		Wolves[i].speed = 1;
 		Wolves[i].direction = NORTH;
 	}
 	time = 10; //need Systick to decrement time!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 }
-
+/*===================================================================================================================================
+GAME FUNCTIONS
+=====================================================================================================================================*/
 int checkCanMove(direction_t dir){
 	int move;//0 = can't move, 1 = can move
 	//check if path available!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -54,13 +158,13 @@ void move(actorType *p){
 	if (checkCanMove(p->direction)){	
 		switch(p->direction){
 			case NORTH:
-				(*p).y += (*p).speed;
+				(*p).y -= (*p).speed;
 				break;
 			case EAST:
 				(*p).x += (*p).speed;
 				break;
 			case SOUTH:
-				(*p).y -= (*p).speed;
+				(*p).y += (*p).speed;
 				break;
 			case WEST:
 				(*p).x -= (*p).speed;
@@ -81,6 +185,22 @@ void moveEnemy(actorType *wolf){
 	move(wolf);
 }//moveEnemy
 
+void collideWolves(actorType *wolf, int diff){
+	if((pig.x == wolf->x&&pig.y == wolf->y))
+	{
+		lives--;
+		PlayGameInit(diff);//reset actors and time
+	}//rough collision detection with wolves -- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1fix later, maybe add rocks/obstacles
+}
+void collideFlags(flagType *f){
+	if(f->x!=-1){
+		if((pig.x==f->x)&&(pig.y==f->y)){
+			flagcount++;
+			score = score+10;//increment score based on flags
+			f->x = -1;
+		}
+	}
+}
 void updatemap(){
 	//update the map!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//if flag[i] == -1, then do not display
@@ -89,34 +209,15 @@ void updateradar(){
 	//update the radar!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//if flag[i] == -1, then do not display
 }
-void flagInit(){
-	for (int i = 0; i < FLAGS_TOTAL; i++){
-		Flags[i].x = 0;
-		Flags[i].y = 0;
-	}
-	//initialize location of flags!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-}
-void collideWolves(actorType *wolf){
-	if((pig.x == wolf->x&&pig.y == wolf->y))
-	{
-		lives--;
-		PlayGameInit();//reset actors and time
-	}//rough collision detection with wolves -- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1fix later, maybe add rocks/obstacles
-}
-void collideFlags(flagType *f){
-	if(f->x!=-1){
-		if((pig.x==f->x)&&(pig.y==f->y)){
-			flagcount++;
-			f->x = -1;
-		}
-	}
-}
 int playgame(int difficulty){
-		PlayGameInit();
+		PlayGameInit(difficulty);//set locations of pigs and wolves
+		updatemap();//include pig and wolf locations in map
+		flagInit(difficulty);//set locations of flags in map
+		updatemap();//include flag locations in map
 		lives = 3;
 		winlose = -1;//0 = lose, 1 = win
 		flagcount = 0;
-		flagInit();
+		score = 0;
 		while (winlose==-1){
 			displaymap();
 			displayradar();
@@ -124,7 +225,7 @@ int playgame(int difficulty){
 			move(&pig);
 			for (int i = 0; i<WOLVES_SIZE; i++){
 				move(&Wolves[i]);
-				collideWolves(&Wolves[i]);
+				collideWolves(&Wolves[i],difficulty);
 			}
 			for(int i = 0; i< FLAGS_TOTAL; i++){
 				collideFlags(&Flags[i]);
@@ -136,7 +237,8 @@ int playgame(int difficulty){
 				return winlose;
 			}
 			if (flagcount == 10){
-				winlose = 1;
+				score = score + time*10;//increase score by some factor dependent on time!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+				winlose = score;
 				return winlose;
 			}
 		}//while
@@ -186,43 +288,5 @@ PLAYER: This is where the character info is bundled and vectors can be dealt wit
 	//add a pointer to bitmap info
 }player;
 */
-
-uint32_t map1[32][40] = 
-{
-{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-{1,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1},
-{1,1,0,1,1,1,0,0,1,1,1,1,1,1,0,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,1},
-{1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,1},
-{1,1,0,1,1,1,0,0,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,0,0,1,1,0,1},
-{1,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,1,0,1},
-{1,1,3,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,4,0,0,0,0,0,0,1},
-{1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1},
-{1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1},
-{1,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1},
-{1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,1},
-{1,1,0,0,0,4,0,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,1,1,0,1},
-{1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,0,1,1,0,0,0,0,0,1,1,0,1,1,0,1},
-{1,1,0,1,1,1,0,0,0,0,0,0,4,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,1,1,1,0,1,1,0,1,1,0,1},
-{1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,3,0,1},
-{1,1,0,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,0,0,1,1,1,1,1,0,0,0,1,1},
-{1,1,0,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1},
-{1,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
-{1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,1},
-{1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,1},
-{1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,0,1,1,0,1},
-{1,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,0,1,1,0,1},
-{1,1,4,0,0,0,0,0,0,0,1,1,1,0,1,1,0,0,0,5,0,6,0,5,0,5,0,0,0,0,0,0,0,4,0,0,0,0,0,1},
-{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-{1,1,0,0,0,4,0,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,1,1,0,1},
-{1,1,0,1,1,1,0,0,0,0,0,0,4,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,1,1,1,0,1,1,0,1,1,0,1},
-{1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,3,0,1},
-{1,1,0,0,0,0,0,1,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,1},
-{1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,0,1,1,0,1},
-{1,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,0,1,1,0,1},
-{1,1,4,0,0,0,0,0,0,0,1,1,1,0,1,1,0,0,0,5,0,6,0,5,0,5,0,0,0,0,0,0,0,4,0,0,0,0,0,1},
-{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
-}; 
-/*This is just the level one map. I have the other two in notepad files, but I need them to be inits, so I'll have to change
-    the  lettters to numbers to represent walls, spaces, flags, rocks, and cars.*/
 
 

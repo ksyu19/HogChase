@@ -6,7 +6,7 @@
 
 //-----------------------playgame-----------------------
 // Inputs: an int that indicates difficulty level (1 == easy,2 == medium,3 == hard)
-// Outputs: an int (0 == lose, 1 == win, -1 == neither)
+// Outputs: an int (0 == lose, -1 == neither win nor lose, >0 == score)
 // Outputs map and radar with gameplay by calling Display functions
 // Does not output win/lose or menu screens (in main)
 int playgame(int difficulty);
