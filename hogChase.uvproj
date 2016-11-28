@@ -7,36 +7,36 @@
 
   <Targets>
     <Target>
-      <TargetName>RallyX</TargetName>
+      <TargetName>HogChase</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <TargetOption>
         <TargetCommonOption>
-          <Device>LM4F120H5QR</Device>
+          <Device>TM4C1233H6PGE</Device>
           <Vendor>Texas Instruments</Vendor>
-          <Cpu>IRAM(0x20000000-0x20007FFF) IROM(0-0x3FFFF) CLOCK(8000000) CPUTYPE("Cortex-M4") FPU2</Cpu>
+          <Cpu>IRAM(0x20000000-0x20007FFF) IROM(0-0x3FFFF) CLOCK(16000000) CPUTYPE("Cortex-M4") FPU2</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
-          <StartupFile>"STARTUP\Luminary\Startup.s" ("Luminary Startup Code")</StartupFile>
-          <FlashDriverDll>UL2CM3(-O207 -S0 -C0 -FO7 -FD20000000 -FC800 -FN1 -FF0LM4F_256 -FS00 -FL040000)</FlashDriverDll>
-          <DeviceId>5919</DeviceId>
-          <RegisterFile>LM4Fxxxx.H</RegisterFile>
+          <StartupFile>"Startup\TI\TM4C123\startup_TM4C123.s" ("TM4C123 Startup Code")</StartupFile>
+          <FlashDriverDll>UL2CM3(-O207 -S0 -C0 -FO7 -FD20000000 -FC800 -FN1 -FF0TM4C123_256 -FS00 -FL040000)</FlashDriverDll>
+          <DeviceId>6003</DeviceId>
+          <RegisterFile>TM4C123.h</RegisterFile>
           <MemoryEnv></MemoryEnv>
           <Cmp></Cmp>
           <Asm></Asm>
           <Linker></Linker>
           <OHString></OHString>
           <InfinionOptionDll></InfinionOptionDll>
-          <SLE66CMisc></SLE66CMisc>
+          <SLE66CMisc>-DTM4C1233H6PGE</SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <SFDFile></SFDFile>
+          <SFDFile>SFD\TI\TM4C123\TM4C1233H6PGE.SFR</SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
           <IncludePath></IncludePath>
           <LibPath></LibPath>
-          <RegisterFilePath>Luminary\</RegisterFilePath>
-          <DBRegisterFilePath>Luminary\</DBRegisterFilePath>
+          <RegisterFilePath>TI\TM4C123\</RegisterFilePath>
+          <DBRegisterFilePath>TI\TM4C123\</DBRegisterFilePath>
           <TargetStatus>
             <Error>0</Error>
             <ExitCodeStop>0</ExitCodeStop>
@@ -45,7 +45,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>.\</OutputDirectory>
-          <OutputName>SpaceInvaders</OutputName>
+          <OutputName>hogChase</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>0</CreateHexFile>
@@ -104,7 +104,7 @@
           <SimDllName>SARMCM3.DLL</SimDllName>
           <SimDllArguments>-MPU</SimDllArguments>
           <SimDlgDll>DCM.DLL</SimDlgDll>
-          <SimDlgDllArguments>-pCM4 -dLaunchPadDLL</SimDlgDllArguments>
+          <SimDlgDllArguments>-pCM4</SimDlgDllArguments>
           <TargetDllName>SARMCM3.DLL</TargetDllName>
           <TargetDllArguments>-MPU</TargetDllArguments>
           <TargetDlgDll>TCM.DLL</TargetDlgDll>
@@ -139,12 +139,12 @@
             <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
             <RestoreFunctions>0</RestoreFunctions>
             <RestoreToolbox>1</RestoreToolbox>
-            <RestoreTracepoints>0</RestoreTracepoints>
+            <RestoreTracepoints>1</RestoreTracepoints>
             <RestoreSysVw>1</RestoreSysVw>
             <UsePdscDebugDescription>1</UsePdscDebugDescription>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>3</TargetSelection>
+          <TargetSelection>1</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -158,7 +158,7 @@
             <PeripheralDll></PeripheralDll>
             <PeripheralDllArguments></PeripheralDllArguments>
             <InitializationFile></InitializationFile>
-            <Driver>BIN\lmidk-agdi.dll</Driver>
+            <Driver>BIN\UL2CM3.DLL</Driver>
           </TargetDlls>
         </DebugOption>
         <Utilities>
@@ -167,12 +167,12 @@
             <UseExternalTool>0</UseExternalTool>
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
-            <Capability>1</Capability>
-            <DriverSelection>4097</DriverSelection>
+            <Capability>0</Capability>
+            <DriverSelection>-1</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
-          <Flash2>BIN\lmidk-agdi.dll</Flash2>
-          <Flash3>"" ()</Flash3>
+          <Flash2>BIN\UL2CM3.DLL</Flash2>
+          <Flash3></Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -210,14 +210,14 @@
             <GenPPlst>0</GenPPlst>
             <AdsCpuType>"Cortex-M4"</AdsCpuType>
             <RvctDeviceName></RvctDeviceName>
-            <mOS>2</mOS>
+            <mOS>0</mOS>
             <uocRom>0</uocRom>
             <uocRam>0</uocRam>
             <hadIROM>1</hadIROM>
             <hadIRAM>1</hadIRAM>
             <hadXRAM>0</hadXRAM>
             <uocXRam>0</uocXRam>
-            <RvdsVP>1</RvdsVP>
+            <RvdsVP>2</RvdsVP>
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -290,17 +290,17 @@
                 <Size>0x0</Size>
               </XRAM>
               <OCR_RVCT1>
-                <Type>1</Type>
+                <Type>0</Type>
                 <StartAddress>0x0</StartAddress>
                 <Size>0x0</Size>
               </OCR_RVCT1>
               <OCR_RVCT2>
-                <Type>1</Type>
+                <Type>0</Type>
                 <StartAddress>0x0</StartAddress>
                 <Size>0x0</Size>
               </OCR_RVCT2>
               <OCR_RVCT3>
-                <Type>1</Type>
+                <Type>0</Type>
                 <StartAddress>0x0</StartAddress>
                 <Size>0x0</Size>
               </OCR_RVCT3>
@@ -310,7 +310,7 @@
                 <Size>0x40000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
-                <Type>1</Type>
+                <Type>0</Type>
                 <StartAddress>0x0</StartAddress>
                 <Size>0x0</Size>
               </OCR_RVCT5>
@@ -343,26 +343,26 @@
             <RvctStartVector></RvctStartVector>
           </ArmAdsMisc>
           <Cads>
-            <interw>0</interw>
+            <interw>1</interw>
             <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
-            <OneElfS>1</OneElfS>
+            <OneElfS>0</OneElfS>
             <Strict>0</Strict>
             <EnumInt>0</EnumInt>
-            <PlainCh>1</PlainCh>
+            <PlainCh>0</PlainCh>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
-            <wLevel>2</wLevel>
+            <wLevel>0</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>0</uC99>
             <useXO>0</useXO>
             <VariousControls>
-              <MiscControls>--C99</MiscControls>
-              <Define>rvmdk PART_LM4F120H5QR</Define>
+              <MiscControls></MiscControls>
+              <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..;..\..\..</IncludePath>
+              <IncludePath></IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -403,17 +403,12 @@
       </TargetOption>
       <Groups>
         <Group>
-          <GroupName>Source</GroupName>
+          <GroupName>Hardware and Device-Tethered Things</GroupName>
           <Files>
             <File>
-              <FileName>startup.s</FileName>
+              <FileName>startup_TM4C123.s</FileName>
               <FileType>2</FileType>
-              <FilePath>.\startup.s</FilePath>
-            </File>
-            <File>
-              <FileName>random.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\random.s</FilePath>
+              <FilePath>.\startup_TM4C123.s</FilePath>
             </File>
             <File>
               <FileName>DAC.c</FileName>
@@ -426,6 +421,21 @@
               <FilePath>.\ADC.c</FilePath>
             </File>
             <File>
+              <FileName>Sound.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sound.c</FilePath>
+            </File>
+            <File>
+              <FileName>ST7735.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ST7735.c</FilePath>
+            </File>
+            <File>
+              <FileName>TExaS.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\TExaS.c</FilePath>
+            </File>
+            <File>
               <FileName>Timer0.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Timer0.c</FilePath>
@@ -436,9 +446,9 @@
               <FilePath>.\Timer1.c</FilePath>
             </File>
             <File>
-              <FileName>Sound.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sound.c</FilePath>
+              <FileName>Print.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\Print.s</FilePath>
             </File>
             <File>
               <FileName>LCD.s</FileName>
@@ -446,14 +456,14 @@
               <FilePath>.\LCD.s</FilePath>
             </File>
             <File>
-              <FileName>Print.s</FileName>
+              <FileName>IO.s</FileName>
               <FileType>2</FileType>
-              <FilePath>.\Print.s</FilePath>
+              <FilePath>.\IO.s</FilePath>
             </File>
             <File>
-              <FileName>ST7735.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\ST7735.c</FilePath>
+              <FileName>ADC.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\ADC.h</FilePath>
             </File>
             <File>
               <FileName>tm4c123gh6pm.h</FileName>
@@ -461,54 +471,67 @@
               <FilePath>.\tm4c123gh6pm.h</FilePath>
             </File>
             <File>
-              <FileName>RallyX.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\RallyX.c</FilePath>
-            </File>
-            <File>
-              <FileName>Display.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Display.c</FilePath>
-            </File>
-            <File>
-              <FileName>PlayGame.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\PlayGame.c</FilePath>
-            </File>
-            <File>
-              <FileName>Display.h</FileName>
+              <FileName>TExaS.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\Display.h</FilePath>
-            </File>
-            <File>
-              <FileName>PlayGame.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\PlayGame.h</FilePath>
-            </File>
-            <File>
-              <FileName>IO.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\IO.s</FilePath>
-            </File>
-            <File>
-              <FileName>Navigate.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Navigate.c</FilePath>
-            </File>
-            <File>
-              <FileName>organize.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\organize.c</FilePath>
+              <FilePath>.\TExaS.h</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>ObjectCode</GroupName>
+          <GroupName>Software</GroupName>
           <Files>
             <File>
-              <FileName>texas.o</FileName>
-              <FileType>3</FileType>
-              <FilePath>.\texas.o</FilePath>
+              <FileName>organize.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\organize.c</FilePath>
+              <FileOption>
+                <CommonProperty>
+                  <UseCPPCompiler>2</UseCPPCompiler>
+                  <RVCTCodeConst>0</RVCTCodeConst>
+                  <RVCTZI>0</RVCTZI>
+                  <RVCTOtherData>0</RVCTOtherData>
+                  <ModuleSelection>0</ModuleSelection>
+                  <IncludeInBuild>2</IncludeInBuild>
+                  <AlwaysBuild>2</AlwaysBuild>
+                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
+                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
+                  <PublicsOnly>2</PublicsOnly>
+                  <StopOnExitCode>11</StopOnExitCode>
+                  <CustomArgument></CustomArgument>
+                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <ComprImg>1</ComprImg>
+                </CommonProperty>
+                <FileArmAds>
+                  <Cads>
+                    <interw>2</interw>
+                    <Optim>0</Optim>
+                    <oTime>2</oTime>
+                    <SplitLS>2</SplitLS>
+                    <OneElfS>2</OneElfS>
+                    <Strict>2</Strict>
+                    <EnumInt>2</EnumInt>
+                    <PlainCh>2</PlainCh>
+                    <Ropi>2</Ropi>
+                    <Rwpi>2</Rwpi>
+                    <wLevel>0</wLevel>
+                    <uThumb>2</uThumb>
+                    <uSurpInc>2</uSurpInc>
+                    <uC99>1</uC99>
+                    <useXO>2</useXO>
+                    <VariousControls>
+                      <MiscControls></MiscControls>
+                      <Define></Define>
+                      <Undefine></Undefine>
+                      <IncludePath></IncludePath>
+                    </VariousControls>
+                  </Cads>
+                </FileArmAds>
+              </FileOption>
+            </File>
+            <File>
+              <FileName>Main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Main.c</FilePath>
             </File>
           </Files>
         </Group>

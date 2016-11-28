@@ -1,42 +1,8 @@
-// FiFo.c
-// Runs on LM4F120/TM4C123
-// Provide functions that implement the Software FiFo Buffer
-// Student names: Alex Smith and Karena Yu
-// Last modification date: 11-16-16
-//    16-bit color, 128 wide by 160 high LCD
-// Backlight (pin 10) connected to +3.3 V
-// MISO (pin 9) unconnected 
-// SCK (pin 8) connected to PA2 (SSI0Clk)
-// MOSI (pin 7) connected to PA5 (SSI0Tx)
-// TFT_CS (pin 6) connected to PA3 (SSI0Fss)
-// CARD_CS (pin 5) unconnected
-// Data/Command (pin 4) connected to PA6 (GPIO), high for data, low for command
-// RESET (pin 3) connected to PA7 (GPIO)
-// VCC (pin 2) connected to +3.3 V
-// Gnd (pin 1) connected to ground
-#include <stdint.h>
-#include "ST7735.h"
-#include <math.h>
-
-/*=====================================================================
-GAME
-=====================================================================*/
-typedef dir{enum NORTH, EAST, SOUTH, WEST} ;
-typedef struct
-{
-	float deltaTime; //Store time since last game update
-	short level; //Which level currently on
-	level levelData[3]; //Level datas
-	
-	//Entities
-	entity* enemies; //Array of enemies
-	entity* player; //Player
-
-} game;
+#include <stdio.h>
+#include <stdlib.h>
 
 /*===================================================================================================================================
-VECTOR FUNCTIONS:
-These are so that we can later move our sprites when we interface with the joystick.
+VECTOR FUNCTIONS: These are so that we can later move our sprites when we interface with the joystick.
 =================================================================================================================================*/
 typedef struct 
 {
@@ -63,6 +29,52 @@ void initVect (vector2 *vect, float x, float y)
 	vect->y = y;
 }
 
+float magnitude (vector2 *v)
+{
+	return (sqrt(v->x*v->x + v->y*v->y));
+}	
+
+/*=====================================================
+ENTITY
+=====================================================*/
+
+const short maxFuel =  20;
+typedef enum { PLAYER, ENEMY } entityType;
+typedef enum direction {NORTH, EAST, SOUTH, WEST} Dir;
+
+typedef struct
+{
+	vector2 position;
+	Dir curDir;
+	float speed;
+	short fuel;
+	float radius;
+	entityType type;
+}entity;
+
+//--------------------------------------------------------------------
+void initializeEntity(entity* ent)
+{
+	
+};
+
+/*=====================================================================
+GAME
+=====================================================================*/
+
+typedef struct
+{
+	float deltaTime; //Store time since last game update
+	short level; //Which level currently on
+	char** levelData[3]; //Level datas
+	
+	//Entities
+	entity* enemy; //Array of enemies
+	entity* player; //Player
+
+} game;
+
+
 /*===================================================================================================================================
 PLAYER: This is where the character info is bundled and vectors can be dealt with.
 =====================================================================================================================================*/
@@ -74,26 +86,6 @@ typedef struct
 }player;
 
 
-/*=====================================================
-ENTITY
-=====================================================*/
-const short maxFuel =  20;
-typedef enum { PLAYER, PIG, COW, CHICKEN } entityType;
-typedef struct
-{
-	vector2 position;
-	dir curDir;
-	float speed;
-	short fuel;
-	float radius;
-	entityType type;
-} entity;
-
-//--------------------------------------------------------------------
-void initializeEntity(entity* ent)
-{
-	
-};
 
 /*======================================================================
 COLLISION DETECTION
@@ -200,7 +192,7 @@ short entitiesColliding(entity* ent1, entity* ent2)
 		distance.x = abs(ent1->position.x -  ent2->position.x);
 		distance.y = abs(ent1->position.y -  ent2->position.y);
 		
-	if (magnitude(distance) < ent1->radius + ent2->radius)
+	if (magnitude(&distance) < ent1->radius + ent2->radius)
 	{
 		return 1;
 	}
@@ -213,22 +205,67 @@ short entitiesColliding(entity* ent1, entity* ent2)
 /*======================================================================
 LEVEL STUFF
 =======================================================================*/
+typedef enum {
+	O,//open path
+	C,//closed path
+	S,//straw
+	T,//twigs
+	B,//bricks
+	P,//pig
+	W//wolf
+}mapIcons;
+
 const short row = 32;
 const short col = 40;
 
 //Loads level data hard coded
-short** loadLevel(short levelNum)
+mapIcons** loadLevel(short level)
 {
-	short levDat[row][col];
-	if (levelNum == 1)
+	mapIcons** levelPtr;
+	if (level == 1)
 	{
-		
+		mapIcons map[row][col] = 
+		{
+		{C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C},
+		{C,C,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,C,C,C,C,C,C,C,C,C,O,O,O,O,O,O,O,O,O,C,C,C,C},
+		{C,C,O,C,C,C,O,O,C,C,C,C,C,C,O,C,C,C,O,O,O,O,O,O,O,O,C,C,C,C,C,C,C,C,C,O,O,O,O,C},
+		{C,C,O,O,O,O,O,C,C,C,C,C,C,C,C,O,C,C,C,O,C,C,C,C,C,O,O,O,O,O,O,O,O,O,O,O,C,C,O,C},
+		{C,C,O,C,C,C,O,O,C,C,C,C,C,C,O,C,C,C,O,C,C,C,C,C,O,C,C,C,C,C,C,C,C,C,O,O,C,C,O,C},
+		{C,C,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,O,O,C,C,C,C,C,O,C,C,C,C,C,C,C,C,C,O,C,C,O,C},
+		{C,C,O,O,O,O,O,O,O,O,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,O,O,C},
+		{C,C,C,C,C,C,C,C,C,O,C,C,C,C,O,O,O,O,O,O,O,O,O,O,O,C,C,C,O,C,C,C,C,C,C,C,C,C,C,C},
+		{C,C,C,C,C,C,C,C,C,O,C,C,C,C,O,O,O,O,O,O,O,O,O,O,O,C,C,C,O,C,C,C,C,C,C,C,C,C,C,C},
+		{C,C,O,C,C,C,O,O,O,O,O,O,O,O,O,O,C,C,C,C,C,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,C,C,C,C},
+		{C,C,O,C,C,C,O,C,C,C,C,C,C,C,C,O,C,C,C,O,O,O,O,O,O,O,C,C,C,C,C,C,C,C,C,O,O,O,O,C},
+		{C,C,O,O,O,O,O,C,C,C,C,C,C,C,C,O,C,C,C,O,C,C,C,C,C,O,O,O,O,O,C,C,C,C,C,O,C,C,O,C},
+		{C,C,O,C,C,C,O,C,C,C,C,C,C,C,C,O,C,C,C,O,C,C,C,C,C,O,C,C,O,O,O,O,O,C,C,O,C,C,O,C},
+		{C,C,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,O,O,C,C,C,C,C,O,O,O,O,C,C,C,O,C,C,O,C,C,O,C},
+		{C,C,O,O,O,O,O,O,O,O,C,C,C,C,C,O,O,O,O,O,O,O,O,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,C},
+		{C,C,O,C,C,C,C,C,C,O,C,C,C,C,C,C,O,C,C,C,C,C,O,C,C,C,C,C,O,O,C,C,C,C,C,O,O,O,C,C},
+		{C,C,O,C,C,C,C,C,C,O,C,C,C,C,C,C,O,C,C,C,C,C,O,C,C,C,C,C,O,O,C,C,C,C,C,C,O,O,C,C},
+		{C,C,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,C,C},
+		{C,C,O,C,C,C,O,C,C,C,C,C,C,C,C,O,C,C,C,O,O,O,O,O,O,O,C,C,C,C,C,C,C,C,C,O,O,O,O,C},
+		{C,C,O,O,O,O,O,C,C,C,C,C,C,C,C,O,C,O,C,O,C,O,C,O,C,O,O,O,O,O,O,O,O,O,O,O,C,C,O,C},
+		{C,C,O,C,C,C,O,C,C,C,C,C,C,C,C,O,C,O,C,O,C,O,C,O,C,O,C,C,C,C,C,C,C,C,C,O,C,C,O,C},
+		{C,C,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,C,O,C,O,C,O,C,O,C,C,C,C,C,C,C,C,C,O,C,C,O,C},
+		{C,C,O,O,O,O,O,O,O,O,C,C,C,O,C,C,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,C},
+		{C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C},
+		{C,C,O,O,O,O,O,C,C,C,C,C,C,C,C,O,C,C,C,O,C,C,C,C,C,O,O,O,O,O,C,C,C,C,C,O,C,C,O,C},
+		{C,C,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,O,O,C,C,C,C,C,O,O,O,O,C,C,C,O,C,C,O,C,C,O,C},
+		{C,C,O,O,O,O,O,O,O,O,C,C,C,C,C,O,O,O,O,O,O,O,O,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,C},
+		{C,C,O,O,O,O,O,C,C,C,C,C,C,C,C,O,C,O,C,O,C,O,C,O,C,O,O,O,O,O,O,O,O,O,O,O,C,C,O,C},
+		{C,C,O,C,C,C,O,C,C,C,C,C,C,C,C,O,C,O,C,O,C,O,C,O,C,O,C,C,C,C,C,C,C,C,C,O,C,C,O,C},
+		{C,C,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,C,O,C,O,C,O,C,O,C,C,C,C,C,C,C,C,C,O,C,C,O,C},
+		{C,C,O,O,O,O,O,O,O,O,C,C,C,O,C,C,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,C},
+		{C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C}
+		}; 
+		levelPtr = map;
 	}
-	else if (levelNum == 2)
+	else if (level == 2)
 	{
 	
 	}
-	else if (levelNum == 3)
+	else if (level == 3)
 	{
 	
 	}
@@ -236,18 +273,18 @@ short** loadLevel(short levelNum)
 	{
 		//???????
 	}
-	return levDat;
+	return levelPtr;
 };
 
 
 //------------------------------------------
-void initialize Game(game* G)
+void initializeGame(game* G)
 {
 
 };
 
 //------------------------------------------
-void initializeLevels(game* G);
+void initializeLevels(game* G)
 {
 	int i;
 	for (i = 0; i < 3; i++)
@@ -259,8 +296,7 @@ void initializeLevels(game* G);
 //------------------------------------------
 void initializeEntities(game* G)
 {
-	//Create Enemies Data
-	G->enemies = (entity*) malloc((2+level)*sizeof(entity*));
+	
 };
 //-------------------------------------------
 void clearFrame()
@@ -288,17 +324,17 @@ void renderEntity(entity* ent)
 void renderFrame(game* G)
 {
 	//Set camera based on player position
-	short camI = G->player.y / 16;
-	short camJ = G->player.x / 16;
+	short camI = G->player->position.y / 16;
+	short camJ = G->player->position.x / 16;
 	
 	//Render tiles around player
 	int i, j;
 	for (i = camI-3; i <= camI+4; i++)
 	{
-		for (j = camJ - 4; i <= camJ + 4)
+		for (j = camJ - 4; j <= (camJ + 4); j++)
 		{
 			//LOAD WALL INTO BUFFER
-			if (G->levelData[level][i][j] ==  1)
+			if (G->levelData[G->level][i][j] ==  1)
 			{
 				//DRAW WALL AT y=i*16, x=j*16
 			}
@@ -309,14 +345,14 @@ void renderFrame(game* G)
 	//Render Enemies
 	for (i = 0; i < 3; i++)
 	{
-		renderEntity(G->enemy[i]);
+		renderEntity(&G->enemy[i]);
 	}
 	
 	//Render player
 	renderEntity(G->player);
 	
 	clearFrame();
-	renderBuffer();
+	
 
 }
 
@@ -332,8 +368,8 @@ int main()
 	//Game running
 	while(1)
 	{
-		updateGame(&RallyX);
-		handleCollisions(&RallyX);
+		//updateGame(&RallyX);				//TO DO LATER!!!!!!!!!!!!!!!
+		//handleCollisions(&RallyX);
 		renderFrame(&RallyX);
 	}
 	return 0;
@@ -346,38 +382,12 @@ CONSTANTS, TYPEDEFS (ENUMS, STRUCTS)
 =====================================================================================================================================*/
 #define WOLVES_SIZE 3 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!adjust later (might depend on difficulty)
 #define FLAGS_TOTAL 10 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!adjust later
-typedef enum {NORTH,EAST,SOUTH,WEST} direction_t;
+//typedef enum {NORTH,EAST,SOUTH,WEST} direction_t;
 typedef enum {PAUSE,RESUME,QUIT} buttons;//implement later!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-typedef enum {
-	O,//open path
-	C,//closed path
-	S,//straw
-	T,//twigs
-	B,//bricks
-	P,//pig
-	W//wolf
-}mapIcons;
-typedef struct actor{
-	int x;
-	int y;
-	int speed;
-	direction_t direction;
-}actorType;
-typedef struct flag{
-	int x; // x = -1 when flag has been collected
-	int y;
-}flagType;
+
 /*===================================================================================================================================
 DECLARE VARIABLES
 =====================================================================================================================================*/
-actorType pig; 
-actorType Wolves[WOLVES_SIZE];
-flagType Flags[FLAGS_TOTAL];
-int lives;
-int winlose;
-int flagcount;
-int time;
-int score;
 //Level 1 Map:
 mapIcons map1[32][40] = 
 {
@@ -552,12 +562,12 @@ void PlayGameInit(int diff){//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 }
 /*===================================================================================================================================
 GAME FUNCTIONS
-=====================================================================================================================================
-int checkCanMove(direction_t dir){
+=====================================================================================================================================*/
+/*int checkCanMove(direction_t dir){
 	int move;//0 = can't move, 1 = can move
 	//check if path available!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	return move;	
-}
+}/*
 
 void move(actorType *p){
 	if (checkCanMove(p->direction)){	
@@ -682,4 +692,4 @@ int playgame(int difficulty){
 		}//while
 		return -1;
 }
-/*
+
