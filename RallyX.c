@@ -106,9 +106,11 @@ int main(void){
 			default: break;
 		}
 		switch(response){
-			case 1: displaylose(); break;
-			case 2: displayoverallwin(); break;
-			default: break;
+			case -1: break;//didn't win or lose
+			case 0: displaylose(); 
+				break;//lose
+			default: displaylevelwin();
+				break;//display level win (anything above = number of points earned)
 		}
 	}
 }//main
