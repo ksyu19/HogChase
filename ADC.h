@@ -18,4 +18,4 @@ void ADC_Init(void);
 // Input: none
 // Output: 12-bit result of ADC conversion
 
-uint32_t ADC_In(void);
+void ADC_In(uint32_t data[2]);

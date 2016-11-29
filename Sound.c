@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include "Sound.h"
 #include "DAC.h"
+#include "Timer0.h"
+#include "tm4c123gh6pm.h"
 
 const uint8_t shoot[4080] = {
   129, 99, 103, 164, 214, 129, 31, 105, 204, 118, 55, 92, 140, 225, 152, 61, 84, 154, 184, 101, 
@@ -1137,18 +1139,67 @@ const uint8_t highpitch[1802] = {
   67, 119, 148, 166, 164, 238, 223, 202, 174, 112, 96, 78, 0, 34, 54, 99, 143, 160, 166, 183, 
   250, 207};
 
+	int SoundIndex;
+  int MusicIndex;
+  int SoundSize;
+  int MusicSize; 
+  const uint8_t *SoundWave;
+  const uint8_t *MusicWave;
+ 		
+  void PlayNoise (void){
+  	if (SoundIndex!=SoundSize&&SoundSize!=0){
+  		DAC_Out(SoundWave[SoundIndex]>>4);
+  		SoundIndex++;
+  	}//sound playing
+  	else if(MusicIndex!=MusicSize&&MusicSize!=0){
+  		DAC_Out(MusicWave[MusicIndex]>>4);
+  		MusicIndex = (MusicIndex+1)&(MusicSize-1); //increment index, and roll over when you get to end
+  	}//music playing
+  	else 
+  		 NVIC_DIS0_R = 1<<19;           //disable interrupts IRQ 19 in NVIC 
+  }
+ 
 void Sound_Init(void){
-// write this
+	DAC_Init();
+	Timer0_Init(PlayNoise, 80000000/11025);
+  SoundIndex = 0;
+  SoundSize = 0;
 };
 void Sound_Play(const uint8_t *pt, uint32_t count){
-// write this
+	SoundWave = pt;
+  SoundIndex = 0;
+ 	SoundSize = count;
+ 	NVIC_EN0_R = 1<<19;           // enable interrupts IRQ 19 in NVIC 
 };
+void Music_Play(const uint8_t *pt, uint32_t count){
+	MusicWave = pt;
+  MusicIndex = 0;
+	MusicSize = count;
+	NVIC_EN0_R = 1<<19;           // enable interrupts IRQ 19 in NVIC 
+};
+void Music_Stop(void){
+ 	MusicIndex = 0;
+ 	MusicSize = 0;
+};
+
+void Sound_Smoke(void){
+ Sound_Play(fastinvader4,1098);
+};
+void Sound_Killed(void){
+ //Sound_Play(highpitch,1802);
+};
+void Sound_Collect(void){
+  // write this
+};
+void Sound_Music(void){
+ Music_Play(highpitch,1802);
+};
+
+
 void Sound_Shoot(void){
 // write this
 };
-void Sound_Killed(void){
-// write this
-};
+
 void Sound_Explosion(void){
 // write this
 };

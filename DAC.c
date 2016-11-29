@@ -10,10 +10,10 @@
 // Lab number: 6
 // Hardware connections
 // TO STUDENTS "REMOVE THIS LINE AND SPECIFY YOUR HARDWARE********
-// DAC bit 3 is PA5
-// DAC bit 2 is PA4
-// DAC bit 1 is PA3
-// DAC bit 0 is PA2
+// DAC bit 3 is PB3
+// DAC bit 2 is PB2
+// DAC bit 1 is PB1
+// DAC bit 0 is PB0
 #include <stdint.h>
 #include "tm4c123gh6pm.h"
 // Code files contain the actual implemenation for public functions
@@ -26,15 +26,15 @@
 void DAC_Init(void){
 	//Port Initialization:
 	volatile unsigned long delay;
-	SYSCTL_RCGC2_R |= 0x01; 		//Port A
+	SYSCTL_RCGC2_R |= 0x02; 		//Port B
 	delay = SYSCTL_RCGC2_R; 		//Delay to wait for clock to settle
 	
-	GPIO_PORTA_AMSEL_R &=~0x3C; //Disable analog function on PA2-5
-	GPIO_PORTA_PCTL_R &=~0x3C; 	//Enable regular GPIO on PA2-5
-	GPIO_PORTA_DIR_R |=0x3C; 		//outputs on PA2-5
-	GPIO_PORTA_AFSEL_R &=~0x3C; //regular function on PA2-5
-	GPIO_PORTA_DEN_R |=0x3C; 		//enable digital on PA2-5
-	GPIO_PORTA_DR8R_R |=0x3C;
+	GPIO_PORTB_AMSEL_R &=~0x0F; //Disable analog function on PB1-3
+	GPIO_PORTB_PCTL_R &=~0x0F; 	//Enable regular GPIO on PB0-3
+	GPIO_PORTB_DIR_R |=0x0F; 		//outputs on PB0-3
+	GPIO_PORTB_AFSEL_R &=~0x0F; //regular function on PB0-3
+	GPIO_PORTB_DEN_R |=0x0F; 		//enable digital on PB0-3
+	GPIO_PORTB_DR8R_R |=0x0F;
 }
 
 // **************DAC_Out*********************
@@ -42,5 +42,5 @@ void DAC_Init(void){
 // Input: 4-bit data, 0 to 15 
 // Output: none
 void DAC_Out(uint32_t data){
-	GPIO_PORTA_DATA_R = data<<2; //set pins 2-5 
+	GPIO_PORTB_DATA_R = data<<2; //set pins 2-5 
 }
