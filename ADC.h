@@ -11,11 +11,11 @@
 // ADC initialization function 
 // Input: none
 // Output: none
-void ADC_Init(void);
+void ADC_Init89(void);
 
 //------------ADC_In------------
 // Busy-wait Analog to digital conversion
 // Input: none
 // Output: 12-bit result of ADC conversion
 
-void ADC_In(uint32_t data[2]);
+void ADC_In89(uint32_t data[2]);
