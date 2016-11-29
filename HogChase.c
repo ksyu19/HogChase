@@ -784,8 +784,19 @@ int main()
 
 
   Delay100ms(50);              // delay 5 sec at 80 MHz
+
+
+ /*ST7735_FillScreen(0x0000);            // set screen to black
+  ST7735_SetCursor(1, 1);
+  ST7735_OutString("GAME OVER");
+  ST7735_SetCursor(1, 2);
+  ST7735_OutString("Nice try,");
+  ST7735_SetCursor(1, 3);
+  ST7735_OutString("Earthling!");
+  ST7735_SetCursor(2, 4);
+  LCD_OutDec(1234);*/
 	
-	beginGame(&RallyX);  //GETTING A HARD FAULT AROUND HERE
+	beginGame(&RallyX);
 	//Game running
 	while(1)
 	{
