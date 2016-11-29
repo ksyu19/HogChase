@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include "Display.h"
 #include "random.h"
+#include "Switch.h"
 /*===================================================================================================================================
 CONSTANTS, TYPEDEFS (ENUMS, STRUCTS)
 =====================================================================================================================================*/
@@ -167,8 +168,18 @@ void flagInit(int diff){
 				Flags[i].y = m/40;//row
 			break;
 			case 2:
+				do {
+					m = (Random()>>21)%1280; //random number from 0 to 1279
+				}while((map2[m/40][m%40]!=O));
+				Flags[i].x = m%40;//column
+				Flags[i].y = m/40;//row
 			break;
 			case 3:
+				do {
+					m = (Random()>>21)%1280; //random number from 0 to 1279
+				}while((map3[m/40][m%40]!=O));
+				Flags[i].x = m%40;//column
+				Flags[i].y = m/40;//row
 			break;
 		}//switch
 	}//for
@@ -288,23 +299,23 @@ void updatemap(int diff){
 		case 2:
 			for (int i = 0; i< FLAGS_TOTAL;i++){
 				if(Flags[i].x != -1){
-					map1[Flags[i].y][Flags[i].x] = T;//twig flags for level 2
+					map2[Flags[i].y][Flags[i].x] = T;//twig flags for level 2
 				}
 			}//flags
-			map1[pig.y][pig.x] = P;//pig
+			map2[pig.y][pig.x] = P;//pig
 			for (int i = 0; i< WOLVES_SIZE;i++){
-				map1[Wolves[i].y][Wolves[i].x] = W; //if Flag and Wolf are in same spot, wolf takes precedent in display
+				map2[Wolves[i].y][Wolves[i].x] = W; //if Flag and Wolf are in same spot, wolf takes precedent in display
 			}//wolves
 		break;
 		case 3:
 			for (int i = 0; i< FLAGS_TOTAL;i++){
 				if(Flags[i].x != -1){
-					map1[Flags[i].y][Flags[i].x] = B;//brick flags for level 3
+					map3[Flags[i].y][Flags[i].x] = B;//brick flags for level 3
 				}
 			}//flags
-			map1[pig.y][pig.x] = P;//pig
+			map3[pig.y][pig.x] = P;//pig
 			for (int i = 0; i< WOLVES_SIZE;i++){
-				map1[Wolves[i].y][Wolves[i].x] = W; //if Flag and Wolf are in same spot, wolf takes precedent in display
+				map3[Wolves[i].y][Wolves[i].x] = W; //if Flag and Wolf are in same spot, wolf takes precedent in display
 			}//wolves
 		break;			
 	}//switch
@@ -348,49 +359,4 @@ int playgame(int difficulty){
 		}//while
 		return -1;
 }
-
-/*===================================================================================================================================
-VECTOR FUNCTIONS:
-These are so that we can later move our sprites when we interface with the joystick.
-=================================================================================================================================*/
-/*typedef struct 
-{
-	float x, y; 
-	
-}vector2;
-
-
-vector2 addVect(vector2 v1, vector2 v2)
-{
-	vector2 v3;
-	v3.x = v1.x + v2.x;
-	v3.y = v1.y + v2.y;
-	return v3;
-}
-
-vector2 subVect(vector2 v1, vector2 v2)
-{
-	vector2 v3;
-	v3.x = v1.x - v2.x;
-	v3.y = v1.y - v2.y;
-	return v3;
-}
-void initVect (vector2 *vect, float x, float y)
-{
-	vect->x = x;
-	vect->y = y;
-}
-
-*/
-/*===================================================================================================================================
-PLAYER: This is where the character info is bundled and vectors can be dealt with.
-=====================================================================================================================================*/
-/*typedef struct 
-{
-	vector2 position; //coordinates of player
-	vector2 direction; 
-	//add a pointer to bitmap info
-}player;
-*/
-
 

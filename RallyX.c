@@ -22,9 +22,7 @@
 #include "tm4c123gh6pm.h"
 #include "PlayGame.h"
 #include "Display.h"
-void IO_Init(void);
-void IO_HeartBeat(void);
-void IO_Touch(void);
+
 
 //*****the first three main programs are for debugging *****
 // main1 tests just the ADC and slide pot, use debugger to see data
@@ -67,7 +65,7 @@ void SysTick_Init(void){
 void SysTick_Handler(void) // every 25 ms
 {
 	PF1 ^= 0x02; //toggle heartbeat LED 
-	Data = ADC_In(); //sample ADC
+	//Data = ADC_In(); //sample ADC
 	PF1 ^= 0x02; //toggle heartbeat LED 
 	PF1 ^= 0x02; //toggle heartbeat LED 
 	PF1 ^= 0x02; //toggle heartbeat LED 
@@ -81,6 +79,7 @@ int menu(){
 	//return choice
 	return m;
 }
+
 int main(void){ 
   //TExaS_Init();       // Bus clock is 80 MHz 
 	//ST7735_InitR(INITR_REDTAB);
@@ -93,7 +92,6 @@ int main(void){
   //EnableInterrupts();
 	int m;
   while(1){
-		IO_Touch();
 		m = menu();
 		//insert enum - for now, use int response
 		int response;
@@ -107,10 +105,69 @@ int main(void){
 		}
 		switch(response){
 			case -1: break;//didn't win or lose
-			case 0: displaylose(); 
-				break;//lose
-			default: displaylevelwin();
-				break;//display level win (anything above = number of points earned)
+			case 0: displaylose(); break;//lose
+			default: displaylevelwin(); break;//display level win (anything above = number of points earned)
 		}
 	}
 }//main
+
+//ADC DEBUGGING
+/*
+uint32_t Convert(uint32_t input){
+	uint32_t Xtable[] = {210,760,1678,3189,4089};	//ADC results
+	uint32_t Ytable[] = {300,500,1000,1500,2000};	//positions (in 0.001 cm)
+	uint32_t x0,x1,y0,y1;
+	uint32_t output;
+	for(int i = 0;i<5; i++){
+		if (Xtable[i] == input){
+			output = Ytable[i];
+			break;
+		}
+		else{
+			if (Xtable[i]>input){
+				if(i==0){
+					x0 = 0;
+					y0 = 0;
+				}
+				else {
+					x0 = Xtable[i-1];
+					y0 = Ytable[i-1];
+				}
+				x1 = Xtable[i];
+				y1 = Ytable[i];
+				output = y0+(input - x0)*(y1-y0)/(x1-x0);
+				break;
+			}
+			else if(i==4){
+				x0 = Xtable[i];
+				y0 = Ytable[i];
+				x1 = 4095;
+				y1 = 2000;//or how many cm long it is
+				output = y0+(input - x0)*(y1-y0)/(x1-x0);
+			}
+		}
+	}//for
+  return output;
+}
+
+uint32_t ADCvalue[2];
+//ADCvalue[0] = 
+int main(void){ 
+  TExaS_Init();         // Bus clock is 80 MHz 
+  ST7735_InitR(INITR_REDTAB); 
+  PortF_Init();
+  ADC_Init();         // turn on ADC, set channel to 1
+  while(1){  
+		ADC_In(ADCvalue);  // sample 12-bit channel 1
+    //Position = Convert(ADCvalue[0]); 
+    ST7735_SetCursor(0,0);
+    LCD_OutDec(ADCvalue[0]); ST7735_OutString("    "); //print vertical
+    ST7735_SetCursor(6,0);
+		LCD_OutDec(ADCvalue[1]); ST7735_OutString("    ");  //print horizontal
+    //LCD_OutFix(Position);
+		for(int i = 0; i<266667; i++){
+		}
+  }
+}   
+*/
+//SOUND DEBUGGING

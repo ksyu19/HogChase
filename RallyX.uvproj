@@ -476,29 +476,9 @@
               <FilePath>.\PlayGame.c</FilePath>
             </File>
             <File>
-              <FileName>Display.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Display.h</FilePath>
-            </File>
-            <File>
-              <FileName>PlayGame.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\PlayGame.h</FilePath>
-            </File>
-            <File>
-              <FileName>IO.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\IO.s</FilePath>
-            </File>
-            <File>
-              <FileName>Navigate.c</FileName>
+              <FileName>Switch.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Navigate.c</FilePath>
-            </File>
-            <File>
-              <FileName>organize.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\organize.c</FilePath>
+              <FilePath>.\Switch.c</FilePath>
             </File>
           </Files>
         </Group>
