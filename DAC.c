@@ -1,3 +1,5 @@
+// put implementations for functions, explain how it works
+// put your names here, date
 // dac.c
 // This software configures DAC output
 // Runs on LM4F120 or TM4C123

@@ -1,11 +1,3 @@
-/*=====================================================================
-INT MAIN
-======================================================================*/
-
-
-typedef enum { PIG, WOLF, NONE } entityType;
-typedef enum direction {NORTH, EAST, SOUTH, WEST} Dir;
-
 typedef enum {
 	O,//open path
 	C,//barrier
@@ -14,12 +6,17 @@ typedef enum {
 	P,//pig
 	W//wolf
 }mapIcons;
+const short row = 32;
+const short col = 40;
 
 typedef struct 
 {
 	float x, y; 
 	
 }vector2;
+
+typedef enum { PIG, WOLF, NONE } entityType;
+typedef enum direction {NORTH, EAST, SOUTH, WEST} Dir;
 
 typedef struct
 {
@@ -35,7 +32,7 @@ typedef struct
 {
 	//float deltaTime; //Store time since last game update
 	short level; //Which level currently on
-	mapIcons** levelData[3]; //Level datas
+	mapIcons** levelData; //Level data
 	
 	//Entities
 	entity enemy [5]; //Array of enemies
@@ -45,7 +42,3 @@ typedef struct
 	short lives;
 	
 } game;
-void beginGame(game*);
-void updateGame(game*);				//TO DO LATER!!!!!!!!!!!!!!!
-void handleCollisions(game*);
-void renderFrame(game*);

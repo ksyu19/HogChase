@@ -1,3 +1,5 @@
+// put prototypes for public functions, explain what it does
+// Karena Yu and Alex Smith
 // dac.h
 // This software configures DAC output
 // Runs on LM4F120 or TM4C123
@@ -11,7 +13,7 @@
 
 // Header files contain the prototypes for public functions
 // this file explains what the module does
-
+#include <stdint.h>
 // **************DAC_Init*********************
 // Initialize 4-bit DAC, called once 
 // Input: none

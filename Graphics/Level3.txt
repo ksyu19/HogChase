@@ -1,24 +1,39 @@
-WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
-WW....W........................WWWWWWWWW
-WW.WW.W.WWWWWW......R..........WWWWWWWWW
-WWBWW.WWWWWWWWWWWWWWWWWWWWW...........WW
-WW....W.F.......WWWWWWWWWWWW..WW.......W
-WW.WW.WWWR..............WWWWWWWWWWWW..WW
-WW.WW.WWW..WWWWWWWWWWWWWWWWWWW........WW
-W.....WWW.WWWWWWWWWWWWWWW......WW.W..WWW
-W.W.WWWWW......F...........WW..WW.W..WWW
-W.W.WWWWW.................WWWW.WW.WW.WWW
-W.W.WWWWWWWWWWWWWWWWWWWWW.WWWW.WW...LWWW
-WF...R.....WWWW..W..WWWWW.......WWW...WW
-WRW.WW.WW.WWW..WWW.WWWWWWWWWWWW.WWWWW.WW
-W......WW............WWWW...WWW.WWWWW.WW
-W.WWWWWWWWWWWW.........WW...WWW.WWWWW.WW
-W.WWWWWWWWWWWWWWW.FWW.WWW.......WWWWW.WW
-W..W...WWWW......WWW.....WWWWWW....WW.WW
-W.WR.L..WWW.WWW........WWWWWW.WWWW.WW.WW
-W.W.WWW.WWW.WWW.WWW.WW.WWWWWW.........WW
-W.W.WWW.WWW.WWW.WWW.WW.WW.WWW.W.W.WWW.WW
-W.W...............W.WW.WW.WWW.W.W.WWW.WW
-W....WWWWWWW.WWW.WW.WW.WW.WWW.W.W.WWW.WW
-WWWW.........WWW...C..E..E...E.E.E....WW
-WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+			{C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C},
+			{C,C,A,C,C,C,O,O,O,O,O,O,O,O,W,O,O,O,C,C,C,C,C,C,C,C,C,O,O,O,O,O,O,O,O,W,C,C,C,C},
+			{C,C,O,C,C,C,O,O,C,C,C,C,C,C,O,C,C,C,O,O,O,O,O,O,O,O,C,C,C,C,C,C,C,C,C,O,O,O,O,C},
+			{C,C,O,O,O,O,O,C,C,C,C,C,C,C,O,O,C,C,A,O,C,C,C,C,C,O,O,O,O,O,O,A,O,O,O,O,C,C,O,C},
+			{C,C,O,C,C,C,O,O,C,C,C,C,C,C,O,C,C,C,O,C,C,C,C,C,O,C,C,C,C,C,C,C,C,C,O,O,C,C,O,C},
+			{C,C,O,O,O,O,H,O,O,O,O,O,O,O,O,O,O,O,O,O,C,C,C,C,C,O,C,C,C,C,C,C,C,C,C,O,C,C,O,C},
+			{C,C,O,O,O,O,O,O,O,O,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,O,O,C},
+			{C,C,C,C,C,C,C,C,C,O,C,C,C,C,O,O,O,O,O,O,O,O,O,O,O,C,C,C,O,C,C,C,O,C,C,O,C,C,O,C},
+			{C,C,C,C,C,C,C,C,C,O,C,C,C,C,O,O,O,O,O,O,O,O,O,O,O,C,C,C,O,C,C,C,O,C,C,O,C,C,H,C},
+			{C,O,O,C,C,C,O,O,O,O,O,O,O,O,O,O,C,C,C,C,C,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,C,C,O,C},
+			{C,O,O,C,C,C,O,C,C,C,O,C,C,C,C,O,C,C,C,O,O,O,O,O,O,O,C,C,C,C,C,C,C,C,C,O,O,O,O,C},
+			{C,H,O,O,O,O,O,C,C,C,O,C,C,C,C,O,C,C,C,O,C,C,C,C,C,O,O,A,O,O,C,C,C,C,C,O,C,C,O,C},
+			{C,O,O,C,C,C,O,C,C,C,O,C,C,C,C,O,C,C,C,O,C,C,C,C,C,O,C,C,O,O,O,O,O,C,C,O,C,C,O,C},
+			{C,O,O,C,C,C,O,O,O,O,O,O,A,O,O,O,O,O,O,O,C,C,C,C,C,O,O,O,O,C,C,C,O,C,C,O,C,C,O,C},
+			{C,C,O,O,O,O,O,O,O,O,C,C,C,C,C,O,O,O,O,O,O,O,O,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,C},
+			{C,C,O,C,C,C,C,C,C,O,C,C,C,C,C,C,O,C,C,C,C,C,O,C,C,C,C,C,O,H,C,C,C,C,C,O,O,O,C,C},
+			{C,C,O,C,C,C,C,C,C,O,C,C,C,C,C,C,O,C,C,C,C,C,O,C,C,C,C,C,O,O,C,C,C,C,C,C,O,O,C,C},
+			{C,C,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,O,C,C},
+			{C,C,O,C,O,C,O,C,C,C,C,C,C,C,C,O,C,C,C,O,O,O,O,O,O,O,C,C,C,C,C,C,C,C,C,O,O,O,O,C},
+			{C,C,C,C,O,C,C,C,C,O,C,C,C,C,O,O,O,O,O,O,O,H,O,O,O,C,C,C,O,C,O,O,O,O,O,O,C,C,O,C},
+			{C,C,C,C,O,C,C,C,C,O,C,C,C,C,O,O,O,O,O,O,O,O,O,O,O,C,C,C,O,C,C,C,C,C,C,O,C,C,O,C},
+			{C,C,O,C,A,C,O,O,O,O,O,O,O,O,O,O,C,C,C,C,C,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,C,C,O,C},
+			{C,C,O,C,C,C,O,C,C,C,C,C,C,C,C,O,C,C,C,O,O,O,O,O,O,O,C,C,C,C,C,C,C,C,C,O,O,O,O,C},
+			{C,C,O,O,O,O,O,C,O,O,O,O,O,O,C,O,C,C,C,O,C,C,C,C,C,O,O,O,O,O,C,C,C,C,C,O,C,C,O,C},
+			{C,O,O,C,C,C,O,C,O,C,C,C,C,O,C,O,C,C,C,O,C,C,C,C,C,O,C,C,O,O,O,O,O,C,C,O,C,C,O,C},
+			{C,O,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,O,O,C,C,C,C,C,O,O,O,O,C,C,C,O,C,C,O,C,C,O,C},
+			{C,O,O,O,O,O,O,O,O,O,C,C,C,C,C,O,O,O,O,O,O,O,O,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,C},
+			{C,O,O,O,O,O,O,C,C,C,C,C,C,C,C,O,C,O,C,O,C,O,C,O,C,O,O,O,O,O,O,O,O,O,O,O,C,C,O,C},
+			{C,A,O,C,C,C,O,C,C,C,C,C,C,C,C,O,C,O,C,O,C,O,C,O,C,O,C,O,C,C,C,C,C,C,C,O,C,C,O,C},
+			{C,C,O,C,C,C,O,O,O,O,O,O,O,O,O,O,O,O,C,O,C,O,C,O,C,O,C,O,C,C,C,C,C,C,C,O,C,C,A,C},
+			{C,C,O,O,O,O,O,H,O,O,C,C,C,O,C,C,O,O,O,W,O,P,O,W,O,W,O,O,O,O,O,O,O,O,O,O,O,O,O,C},
+			{C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C} 
+
+	O,//open path
+	C,//barrier
+	A,//apple
+	H,//hole
+	P,//pig
+	W//wolf

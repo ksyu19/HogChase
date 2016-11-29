@@ -1,3 +1,5 @@
+// put implementations for functions, explain how it works
+// put your names here, date
 // ADC.c
 // Runs on LM4F120/TM4C123
 // Provide functions that initialize ADC0

@@ -1,6 +1,6 @@
 ; LCD.s
-; Student names: Karena Yu and Alex Smith
-; Last modification date: 11-09-16
+; Student names: Karena Yu
+; Last modification date: 10/26/2016
 
 ; Runs on LM4F120/TM4C123
 ; Use SSI0 to send an 8-bit code to the ST7735 160x128 pixel LCD.
@@ -22,7 +22,6 @@
 DC                      EQU   0x40004100
 DC_COMMAND              EQU   0
 DC_DATA                 EQU   0x40
-GPIO_PORTA_DATA_R       EQU   0x400043FC
 SSI0_DR_R               EQU   0x40008008
 SSI0_SR_R               EQU   0x4000800C
 SSI_SR_RNE              EQU   0x00000004  ; SSI Receive FIFO Not Empty
@@ -103,7 +102,7 @@ wdstep1
 ;4) Write the 8-bit data to SSI0_DR_R
 	LDR R1, =SSI0_DR_R 
 	STRB R0, [R1]
-	
+    
     BX  LR                          ;   return
 
 

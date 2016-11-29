@@ -481,7 +481,7 @@ void writedata(uint8_t c);
 // Inputs: None
 // Outputs: None
 // Notes: ...
-void Delay1ms(uint32_t n){uint32_t volatile time;
+void Delay1ms(uint32_t n){uint32_t time; //volatile time
   while(n){
     time = 72724*2/91;  // 1msec, tuned at 80 MHz
     while(time){

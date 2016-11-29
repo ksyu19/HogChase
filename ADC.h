@@ -1,3 +1,6 @@
+// put prototypes for public functions, explain what it does
+// put your names here, date
+
 // ADC.h
 // Runs on LM4F120/TM4C123
 // Provide functions that initialize ADC0
