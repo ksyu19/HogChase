@@ -16,9 +16,8 @@
 void Switch_Init(void){
 	//Port Initialization:
 	volatile unsigned long delay;
-	SYSCTL_RCGC2_R |= 0x10; 		//Port E
-	delay = SYSCTL_RCGC2_R; 		//Delay to wait for clock to settle
-	
+	SYSCTL_RCGCGPIO_R |= 0x10;	//Port E
+	delay = SYSCTL_RCGCGPIO_R; 		//Delay to wait for clock to settle
 	GPIO_PORTE_AMSEL_R &=~0x07;	//Disable analog function on PE0,1,2
 	GPIO_PORTE_PCTL_R &=~0x07; 	//Enable regular GPIO on PE0,1,2
 	GPIO_PORTE_DIR_R &=~0x07;		//inputs on PE0,1,2

@@ -26,10 +26,10 @@
 void DAC_Init(void){
 	//Port Initialization:
 	volatile unsigned long delay;
-	SYSCTL_RCGC2_R |= 0x02; 		//Port B
-	delay = SYSCTL_RCGC2_R; 		//Delay to wait for clock to settle
+	SYSCTL_RCGCGPIO_R |= 0x02;	//Port B
+	delay = SYSCTL_RCGCGPIO_R; 		//Delay to wait for clock to settle
 	
-	GPIO_PORTB_AMSEL_R &=~0x0F; //Disable analog function on PB1-3
+	GPIO_PORTB_AMSEL_R &=~0x0F; //Disable analog function on PB0-3
 	GPIO_PORTB_PCTL_R &=~0x0F; 	//Enable regular GPIO on PB0-3
 	GPIO_PORTB_DIR_R |=0x0F; 		//outputs on PB0-3
 	GPIO_PORTB_AFSEL_R &=~0x0F; //regular function on PB0-3
@@ -42,5 +42,5 @@ void DAC_Init(void){
 // Input: 4-bit data, 0 to 15 
 // Output: none
 void DAC_Out(uint32_t data){
-	GPIO_PORTB_DATA_R = data<<2; //set pins 2-5 
+	GPIO_PORTB_DATA_R = data; //set pins 0-3
 }

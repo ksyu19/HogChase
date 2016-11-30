@@ -14,3 +14,4 @@ void Sound_Round_Clear(void);
 void Sound_Chomp(void);
 void Sound_Flag(void);
 void Sound_Music(void);
+void Sound_Invader(void);

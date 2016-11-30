@@ -24,7 +24,8 @@
 #include "Display.h"
 #include "Sound.h"
 #include "Switch.h"
-
+#include "Timer0.h"
+#include "DAC.h"
 
 //*****the first three main programs are for debugging *****
 // main1 tests just the ADC and slide pot, use debugger to see data
@@ -124,7 +125,6 @@ int main(void){
   ST7735_InitR(INITR_REDTAB); 
   PortF_Init();
   ADC_Init89();         // turn on ADC, set channel to 1
-
   while(1){  
 		ADC_In89(ADCvalue);  // sample 12-bit channel 1
     Pos = ConvertTest(ADCvalue); 
@@ -139,15 +139,16 @@ int main(void){
 }   
 */
 //SWITCH DEBUGGING
-///*
-int main(void){
+/*
+int mainSwitch(void){
 	TExaS_Init();         // Bus clock is 80 MHz 
   ST7735_InitR(INITR_REDTAB); 
 	Switch_Init();
 	uint32_t input, previous; 
 	previous = 0;
-	
 	while(1){
+		ST7735_SetCursor(0,0);
+		ST7735_OutString("ON");
 		input = Switch_In(); 
 		if(input&&(previous ==0)){ // just pressed 
 			switch(input){
@@ -162,33 +163,60 @@ int main(void){
 		}
 	}
 }
-//*/
+*/
+
+//Timer0 DEBUGGING
+/*
+int statusTest;
+void Timer0Test (void){
+	statusTest = 1;
+}
+int mainTimer(void){ 
+  TExaS_Init();         // Bus clock is 80 MHz 
+  ST7735_InitR(INITR_REDTAB); 
+	Timer0_Init(Timer0Test, 80000000/11025);
+	statusTest = 0;
+	int i = 0;
+	EnableInterrupts();
+  while(1){
+		if (statusTest == 1){
+			DisableInterrupts();
+			statusTest = 0;
+			ST7735_SetCursor(0,0);
+			ST7735_OutString("ON");
+			LCD_OutDec(i);
+			i= (i+1)%500;
+			EnableInterrupts();
+		}
+  }         
+}   
+*/
 /*
 //SOUND DEBUGGING
+int statusTest;
 int main(void){ 
   TExaS_Init();         // Bus clock is 80 MHz 
   ST7735_InitR(INITR_REDTAB); 
 	Switch_Init();
   Sound_Init();
+	statusTest = 0;
+	int i = 0;
 	uint32_t input, previous; 
 	previous = 0;
-	
+	EnableInterrupts();
   while(1){
 		input = Switch_In(); 
 		if(input&&(previous ==0)){ // just pressed 
 			switch(input){
-				case 1: Sound_Music();break;
+				case 1: Sound_Flag();break;
 				case 2: Sound_Chomp();break;
-				//case 3: Sound_Play(E);break;
-				case 4: Music_Stop();break;
-				//case 5: Sound_Play(G);break;
-				//case 6: Sound_Play(A);break;
-				//case 7: Sound_Play(B);break;
+				//case 4: Sound_Round_Clear();break;
 				default:break; 
 			}
 		} 
+		for(int i = 0; i<266667; i++){
+		}
 		previous = input;
-		//Delay10ms(); //remove switch bounce 
   }         
 }   
 */
