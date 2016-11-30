@@ -22,7 +22,7 @@ void displayradar(void){
 };
 void displaymenu(void){
 	ST7735_SetCursor(0,0);
-	ST7735_OutString("Instructions: \nNavigate the pig with the \njoystick to collect all apples. \nAvoid wolves, potholes, and \nrunning out of time!\n Menu: \n 1: Level 1 \n 2: Level 2 \n 3: Exit");
+	ST7735_OutString("Instructions: \nNavigate the pig\nwith the joystick\nto collect all apples.\nAvoid wolves, holes, and \nrunning out of time!\n Menu: \n 1: Level 1 \n 2: Level 2 \n 3: Exit");
 };
 void displaylevelwin(void){
 	ST7735_FillScreen(0);            // set screen to black

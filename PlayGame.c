@@ -19,7 +19,7 @@ void EnableInterrupts(void);  // Enable interrupts
 CONSTANTS, TYPEDEFS (ENUMS, STRUCTS)
 =====================================================================================================================================*/
 #define WOLVES_SIZE 3 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!adjust later (might depend on difficulty)
-#define FLAGS_TOTAL 1 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!adjust later
+#define FLAGS_TOTAL 5 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!adjust later
 typedef enum {NORTH,EAST,SOUTH,WEST,NONE} direction_t;
 typedef enum {PAUSE,RESUME,QUIT} buttons;//implement later!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 /*typedef enum {
@@ -54,30 +54,8 @@ int flagcount;
 int time;
 int score;
 //Level 3 map:
-mapIcons map1[10][8] ={
-	{C,C,C,C,C,C,C,C},
-	{C,O,O,O,O,O,O,C},
-	{C,C,C,O,C,C,C,C},
-	{C,O,C,O,O,O,O,C},
-	{C,O,O,O,C,C,O,C},
-	{C,O,C,O,O,O,O,C},
-	{C,O,O,O,O,O,C,C},
-	{C,O,C,C,O,O,O,C},
-	{C,O,O,O,O,C,O,C},
-	{C,C,C,C,C,C,C,C},
-};
-mapIcons map2[10][8] ={
-	{C,C,C,C,C,C,C,C},
-	{C,O,O,O,O,O,O,C},
-	{C,C,C,O,C,C,C,C},
-	{C,O,C,O,O,O,O,C},
-	{C,O,O,O,C,C,O,C},
-	{C,O,C,O,O,O,O,C},
-	{C,O,O,O,O,O,C,C},
-	{C,O,C,C,O,O,O,C},
-	{C,O,O,O,O,C,O,C},
-	{C,C,C,C,C,C,C,C},
-};
+mapIcons map1[10][8];
+mapIcons map2[10][8];
 mapIcons map3[10][8] ={
 	{C,C,C,C,C,C,C,C},
 	{C,O,O,O,O,O,O,C},
@@ -94,163 +72,189 @@ mapIcons map3[10][8] ={
 /*===================================================================================================================================
 INITIALIZATION FUNCTIONS (and helpers)
 =====================================================================================================================================*/
-void flagInit(int diff){
+/*void flagInit(int diff){
 	int m;
 	for (int i = 0; i < FLAGS_TOTAL; i++){
 		switch(diff){
 			case 1:		
-				Flags[0].x = 6*16;
-				Flags[0].y = 3*16;
-				/*do {
+				Flags[0].x = 1*16;
+				Flags[0].y = 1*16;
+				Flags[1].x = 6*16;
+				Flags[1].y = 1*16;
+				for (int i = 0; i< FLAGS_TOTAL;i++){
+					if(Flags[i].x != -1){
+						map1[Flags[i].y/16][Flags[i].x/16] = A;//straw flags for level 1
+					}
+				}//flags
+				do {
 					m = (Random()>>21)%80; //random number from 0 to 79  (%1280 to get random number from 0 to 1279)
 				}while((map1[m/40][m%40]!=O));
 				Flags[i].x = m%40*16;//column
-				Flags[i].y = m/40*16;//row*/
+				Flags[i].y = m/40*16;//row
 			break;
 			case 2:
-				/*do {
+				do {
 					m = (Random()>>21)%80; //random number from 0 to 79
 				}while((map2[m/40][m%40]!=O));
 				Flags[i].x = m%40;//column
-				Flags[i].y = m/40;//row*/
+				Flags[i].y = m/40;//row
 			break;
 			case 3:
-			/*do {
+			do {
 					m = (Random()>>21)%80; //random number from 0 to 79
 				}while((map3[m/40][m%40]!=O));
 				Flags[i].x = m%40;//column
-				Flags[i].y = m/40;//row*/
+				Flags[i].y = m/40;//row
 			break;
 		}//switch
 	}//for
-}//flagInit
-void PlayGameInit(int diff){//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!11!fix locations speed direction later!!!!
-	switch(diff){
-		case 1://for level 1 difficulty map
-			pig.x = 3*16;//column in map
-			pig.y = 6*16;//row in map
-			pig.direction = NORTH;
-			Wolves[0].x = 6*16;
-			Wolves[0].y = 8*16;
-			Wolves[1].x = -1; //doesn't exist
-			Wolves[2].x = -1; //doesn't exist
-		break;
-		case 2://for level 2 difficulty map
-			pig.x = 20;//column in map
-			pig.y = 17;//row in map
-			pig.direction = EAST;
-			Wolves[0].x = 5;
-			Wolves[0].y = 26;
-			Wolves[1].x = 19;
-			Wolves[1].y = 26;
-			Wolves[2].x = -1;
-		break;
-		case 3://for level 3 difficulty map
-			/* values for map1 large:
-			pig.x = 20;//column in map
-			pig.y = 17;//row in map
-			pig.direction = EAST;
-			Wolves[0].x = 5;
-			Wolves[0].y = 26;
-			Wolves[1].x = 19;
-			Wolves[1].y = 26;
-			Wolves[2].x = 33;
-			Wolves[2].y = 26;
-			*/
-		break;
-	}
-	pig.speed = 1;
-	for (int i = 0; i<WOLVES_SIZE; i++){
-		Wolves[i].speed = 1;
-		Wolves[i].direction = NORTH;
-	}
+}//flagInit*/
+void initMap(mapIcons map[10][8], int diff){
+	//map[0][0] is the top left tile on the screen.
+	//map[7][9] is the bottom right tile on the screen
+	//Draw Bitmaps by looping through the array and rendering appropriate tiles.
+	int i, j, w, f;
+	w = 0;
+	f = 0;
+	if (lives ==3&&diff == 1){
+		mapIcons mapArray[10][8] ={
+			{C,C,C,C,C,C,C,C},
+			{C,A,O,O,O,O,A,C},
+			{C,C,C,O,C,C,C,C},
+			{C,O,C,A,O,O,O,C},
+			{C,O,O,O,C,C,O,C},
+			{C,O,C,P,O,O,A,C},
+			{C,O,O,O,O,O,C,C},
+			{C,O,C,C,O,O,O,C},
+			{C,A,O,O,O,C,W,C},
+			{C,C,C,C,C,C,C,C},
+		};
+		int k,l;
+		 for (k = 0; k < 10; k++){
+			for (l = 0; l < 8; l++){
+				map[k][l] = mapArray[k][l];
+			}
+		}
+	}//start of the game
+	if (lives ==3&&diff == 2){
+		mapIcons mapArray[10][8] ={
+			{C,C,C,C,C,C,C,C},
+			{C,A,O,O,O,O,A,C},
+			{C,C,C,O,C,C,C,C},
+			{C,O,C,A,O,O,O,C},
+			{C,O,O,O,C,C,O,C},
+			{C,O,C,P,C,O,A,C},
+			{C,O,O,O,O,O,C,C},
+			{C,O,C,C,O,O,O,C},
+			{C,A,O,O,W,C,W,C},
+			{C,C,C,C,C,C,C,C},
+		};
+		int k,l;
+		 for (k = 0; k < 10; k++){
+			for (l = 0; l < 8; l++){
+				map[k][l] = mapArray[k][l];
+			}
+		}
+	}//start of the game
+	for (i = 0; i < 10; i++)
+	{
+		for (j = 0; j < 8; j++)
+			{
+				if (map[i][j] == C)
+				{
+					//draw Wall bitmap with top left corner of bitmap at pixel coordinate (j*16, i*16)
+					ST7735_DrawBitmap(j*16,(i)*16,wall,16,16);
+				}
+				else if (map[i][j] == A)
+				{
+					//draw apple bitmap with top left corner of bitmap at pixel coordinate (j*16, i*16)
+					ST7735_DrawBitmap(j*16,(i)*16,apple,16,16); 
+					Flags[w].x = i*16;
+					Flags[w].y = j*16;
+					f++;
+				}
+				else if (map[i][j] == H)
+				{
+					ST7735_DrawBitmap(j*16,(i)*16,hole,16,16);
+				}
+				else if (map[i][j] == P)
+				{
+					ST7735_DrawBitmap(j*16,(i)*16,pigFront,16,16);
+					pig.x = i*16;
+					pig.y = j*16;
+					pig.speed = 1;
+					pig.direction = NORTH;
+				}
+				else if (map[i][j] == W)
+				{
+					ST7735_DrawBitmap(j*16,(i)*16,wolf,16,16);
+					Wolves[w].x = i*16;
+					Wolves[w].y = j*16;
+					Wolves[w].speed = 1;
+					Wolves[w].direction = NORTH;
+					w++;
+				}
+				else 
+				{
+					//draw air ("grass")
+					ST7735_DrawBitmap(j*16,(i)*16,grass,16,16);
+				}
+			}//inner for
+	}//outer for
+	for (int i = w; i<WOLVES_SIZE;i++){
+		Wolves[i].x = -1;
+	}//Wolves that don't exist
+	for (int i = f; i<WOLVES_SIZE;i++){
+		Flags[f].x = -1;
+	}//flags that don't exist
 	time = 5400; //3 min to play each round
+}//Only call this function to initialize map during levels and between deaths
+void displayActors(){
+	//map[0][0] is the top left tile on the screen.
+	//map[7][9] is the bottom right tile on the screen
+	//Draw Bitmaps by looping through the array and rendering appropriate tiles.
+	ST7735_DrawBitmap(pig.y,pig.x,pigFront,16,16);
+	for (int i = 0; i<WOLVES_SIZE; i++){
+		if (Wolves[i].x!=-1){
+			ST7735_DrawBitmap(Wolves[i].y,Wolves[i].x,wolf,16,16);
+		}
+	}
 }
+
 /*===================================================================================================================================
 GAME FUNCTIONS
 =====================================================================================================================================*/
-int checkCanMove(direction_t dir, actorType *a, int diff){
+int checkCanMove(direction_t dir, actorType *a, mapIcons map[10][8]){
 	int move = 0;//0 = can't move, 1 = can move
 	int loc;
-	switch(diff){
-		case 1: 
 			switch(dir){
 			case NORTH:
 				loc = (*a).y-(*a).speed;
-				if (map1[loc][(*a).x] != C)
+				if (map[loc][(*a).x] != C)
 					move = 1;
 				break;
 			case EAST:
 				loc = (*a).x + (*a).speed;
-				if (map1[(*a).y][loc] != C)
+				if (map[(*a).y][loc] != C)
 					move = 1;
 				break;
 			case SOUTH:
 				loc = (*a).y+(*a).speed;
-				if (map1[loc][(*a).x] != C)
+				if (map[loc][(*a).x] != C)
 					move = 1;
 				break;
 			case WEST:
 				loc = (*a).x - (*a).speed;
-				if (map1[(*a).y][loc] != C)
+				if (map[(*a).y][loc] != C)
 					move = 1;
 				break;
 			case NONE: break;
 		}//level 1
-		case 2: 
-			switch(dir){
-			case NORTH:
-				loc = (*a).y-(*a).speed;
-				if (map2[loc][(*a).x] != C)
-					move = 1;
-				break;
-			case EAST:
-				loc = (*a).x + (*a).speed;
-				if (map2[(*a).y][loc] != C)
-					move = 1;
-				break;
-			case SOUTH:
-				loc = (*a).y+(*a).speed;
-				if (map2[loc][(*a).x] != C)
-					move = 1;
-				break;
-			case WEST:
-				loc = (*a).x - (*a).speed;
-				if (map2[(*a).y][loc] != C)
-					move = 1;
-				break;
-			case NONE: break;
-		}//level 2
-		case 3: 
-			switch(dir){
-			case NORTH:
-				loc = (*a).y-(*a).speed;
-				if (map3[loc][(*a).x] != C)
-					move = 1;
-				break;
-			case EAST:
-				loc = (*a).x + (*a).speed;
-				if (map3[(*a).y][loc] != C)
-					move = 1;
-				break;
-			case SOUTH:
-				loc = (*a).y+(*a).speed;
-				if (map3[loc][(*a).x] != C)
-					move = 1;
-				break;
-			case WEST:
-				loc = (*a).x - (*a).speed;
-				if (map3[(*a).y][loc] != C)
-					move = 1;
-				break;
-			case NONE: break;
-		}//level 3
-	}//switch diff
 	return move;	
 }
 
-void move(actorType *p, int diff){
-	if (checkCanMove(p->direction, p, diff)){	
+void move(actorType *p, mapIcons map[10][8]){
+	if (checkCanMove(p->direction, p, map)){	
 		switch(p->direction){
 			case NORTH:
 				(*p).y -= (*p).speed;
@@ -269,12 +273,12 @@ void move(actorType *p, int diff){
 	}
 }//move
 
-direction_t findbestpath(actorType *wolf, int diff){
+direction_t findbestpath(actorType *wolf, mapIcons map[10][8]){
 	direction_t best;
-	int e = checkCanMove(EAST,wolf,diff);
-	int w = checkCanMove(WEST,wolf,diff);
-	int s = checkCanMove(SOUTH,wolf,diff);
-	int n = checkCanMove(NORTH,wolf,diff);
+	int e = checkCanMove(EAST,wolf,map);
+	int w = checkCanMove(WEST,wolf,map);
+	int s = checkCanMove(SOUTH,wolf,map);
+	int n = checkCanMove(NORTH,wolf,map);
 	if(pig.x > (*wolf).x){
 		if(e){
 			best = EAST;
@@ -295,7 +299,7 @@ direction_t findbestpath(actorType *wolf, int diff){
 			best = NORTH;
 		}	
 	}
-	else if (checkCanMove((*wolf).direction,wolf,diff)){
+	else if (checkCanMove((*wolf).direction,wolf,map)){
 		best = (*wolf).direction;
 	}
 	else if(e){
@@ -313,16 +317,17 @@ direction_t findbestpath(actorType *wolf, int diff){
 	//adjust later for better algorithm!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	return best;
 }
-void moveEnemy(actorType *wolf, int diff){
-	(*wolf).direction = findbestpath(wolf, diff);
-	move(wolf, diff);
+void moveEnemy(actorType *wolf, mapIcons map[10][8]){
+	(*wolf).direction = findbestpath(wolf, map);
+	move(wolf, map);
 }//moveEnemy
 
-void collideWolves(actorType *wolf, int diff){
+void collideWolves(actorType *wolf, mapIcons map[10][8],int diff){
 	if((pig.x == wolf->x&&pig.y == wolf->y))
 	{
 		lives--;
-		PlayGameInit(diff);//reset actors and time
+		initMap(map,diff);
+		//PlayGameInit(diff);//reset actors and time
 	}//rough collision detection with wolves -- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1fix later, maybe add rocks/obstacles
 }
 void collideFlags(flagType *f){
@@ -334,7 +339,7 @@ void collideFlags(flagType *f){
 		}
 	}
 }
-void updatemap(int diff){
+/*void updatemap(int diff){
 	switch(diff){
 		case 1:
 			for (int i = 0; i< FLAGS_TOTAL;i++){
@@ -376,58 +381,8 @@ void updatemap(int diff){
 			}//wolves
 		break;			
 	}//switch
-}
-void displaymap(mapIcons map[10][8]){
-	//map[0][0] is the top left tile on the screen.
-	//map[7][9] is the bottom right tile on the screen
-	//Draw Bitmaps by looping through the array and rendering appropriate tiles.
-	int i, j;
-	for (i = 0; i < row; i++)
-	{
-		for (j = 0; j < col; j++)
-			{
-				if (map[i][j] == C)
-				{
-					//draw Wall bitmap with top left corner of bitmap at pixel coordinate (j*16, i*16)
-					ST7735_DrawBitmap(j*16,(i+1)*16,wall,16,16);
-				}
-				else if (map[i][j] == A)
-				{
-					//draw apple bitmap with top left corner of bitmap at pixel coordinate (j*16, i*16)
-					ST7735_DrawBitmap(j*16,(i+1)*16,apple,16,16); //	ST7735_DrawBitmap(j*16+1,i*16+1,apple,16,16);
-				}
-				else if (map[i][j] == H)
-				{
-					ST7735_DrawBitmap(j*16,(i+1)*16,hole,16,16);
-				}
-				else if (map[i][j] == P)
-				{
-					ST7735_DrawBitmap(j*16,(i+1)*16,pigFront,16,16);
-				}
-				else if (map[i][j] == W)
-				{
-					ST7735_DrawBitmap(j*16,(i+1)*16,wolf,16,16);
-				}
-				else 
-				{
-					//draw air ("grass")
-					ST7735_DrawBitmap(j*16,(i+1)*16,grass,16,16);
-				}
-				
-			}
-	}
-}//Only call this function to initialize map during levels and between deaths
-void displayActors(){
-	//map[0][0] is the top left tile on the screen.
-	//map[7][9] is the bottom right tile on the screen
-	//Draw Bitmaps by looping through the array and rendering appropriate tiles.
-	ST7735_DrawBitmap(pig.y,pig.x,pigFront,16,16);
-	for (int i = 0; i<WOLVES_SIZE; i++){
-		if (Wolves[i].x!=-1){
-			ST7735_DrawBitmap(Wolves[i].y,Wolves[i].x,wolf,16,16);
-		}
-	}
-}
+}*/
+
 void updateradar(){
 	//update the radar!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//if flag[i] == -1, then do not display
@@ -453,54 +408,50 @@ direction_t Convert(uint32_t input[2]){
 	//data[0];//North/South (vert - PE5)
   //data[1];//East/West (horz - PE4)
 	direction_t output = NONE;
-	if (4096>input[0]&&input[0]>=3500){
+	if (4096>input[1]&&input[1]>=3500){
 		output = NORTH;
 	}
-	else if (500>=input[0]&&input[0]>0){
+	else if (500>=input[1]&&input[1]>0){
 		output = SOUTH;
 	}
-	else if (500>=input[1]&&input[1]>0){
+	else if (500>=input[0]&&input[0]>0){
 		output = EAST;
 	}
-	else if (4096>input[1]&&input[1]>=3500){
+	else if (4096>input[0]&&input[0]>=3500){
 		output = WEST;
 	}
   return output;
 }
 
 int playgame(int difficulty){//ADD SOUND!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		PlayGameInit(difficulty);//set locations of pigs and wolves
-		updatemap(difficulty);//include pig and wolf locations in map
-		flagInit(difficulty);//set locations of flags in map
-		updatemap(difficulty);//include flag locations in map
 		lives = 3;
 		winlose = -1;//0 = lose, 1 = win
 		flagcount = 0;
 		score = 0;
 		direction_t tempDir;
+		mapIcons map[10][8];
+		initMap(map,difficulty);
 		SysTick_Init();
 		EnableInterrupts();
-		displaymap(map1);
 		while (winlose==-1){
 			if(status){
 			displayActors();
 			//displayradar();
 			//userinput
 			tempDir = Convert(ADCdata);
-			if (checkCanMove(tempDir, &pig, difficulty)){
+			if (checkCanMove(tempDir, &pig, map)){
 				pig.direction = tempDir;
 			}
-			move(&pig, difficulty);
+			move(&pig, map);
 			for (int i = 0; i<WOLVES_SIZE; i++){
 				if(Wolves[i].x!=-1){
-					moveEnemy(&Wolves[i], difficulty);
-					collideWolves(&Wolves[i],difficulty);
+					moveEnemy(&Wolves[i], map);
+					collideWolves(&Wolves[i],map,difficulty);
 				}
 			}
 			for(int i = 0; i< FLAGS_TOTAL; i++){
 				collideFlags(&Flags[i]);
 			}
-			updatemap(difficulty);
 			//updateradar();
 			if(lives == 0){
 				winlose = 0;
