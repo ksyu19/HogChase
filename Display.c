@@ -17,17 +17,27 @@
 #include <stdint.h>
 #include "ST7735.h"
 
-void displaymap(void){
-};
+
 void displayradar(void){
 };
 void displaymenu(void){
+	ST7735_SetCursor(0,0);
+	ST7735_OutString("Instructions: \nNavigate the pig with the \njoystick to collect all apples. \nAvoid wolves, potholes, and \nrunning out of time!\n Menu: \n 1: Level 1 \n 2: Level 2 \n 3: Exit");
 };
 void displaylevelwin(void){
+	ST7735_FillScreen(0);            // set screen to black
+	ST7735_SetCursor(0,0);
+	ST7735_OutString("You Win! \nSelect 1 to return to menu.");
 };
 void displayoverallwin(void){
 };
 void displaylose(void){
+	ST7735_FillScreen(0);            // set screen to black
+	ST7735_SetCursor(0,0);
+	ST7735_OutString("Sorry, you lost :(. \nSelect 1 to return to menu.");
 };
 void displayexit(void){
+	ST7735_FillScreen(0);            // set screen to black
+	ST7735_SetCursor(0,0);
+	ST7735_OutString("Goodbye!");
 };

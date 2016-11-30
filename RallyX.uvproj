@@ -480,6 +480,11 @@
               <FileType>1</FileType>
               <FilePath>.\Switch.c</FilePath>
             </File>
+            <File>
+              <FileName>Graphics.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Graphics.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

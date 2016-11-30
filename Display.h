@@ -1,4 +1,4 @@
-void displaymap(void);
+
 void displayradar(void);
 void displaymenu(void);
 void displaylevelwin(void);

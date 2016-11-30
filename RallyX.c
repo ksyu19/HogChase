@@ -35,66 +35,46 @@
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
 
-#define PF1       (*((volatile uint32_t *)0x40025008))
-#define PF2       (*((volatile uint32_t *)0x40025010))
-#define PF3       (*((volatile uint32_t *)0x40025020))
-uint32_t Data;      // 12-bit ADC
-uint32_t Position;  // 32-bit fixed-point 0.001 cm
-int32_t TxCounter = 0;
-
-
-void PortF_Init(void)
-	{unsigned long volatile delay;
-  // Intialize PortF for hearbeat
-	SYSCTL_RCGCGPIO_R |=0x20; //turn on Port F clock
-	delay = SYSCTL_RCGCGPIO_R; 	
-	GPIO_PORTF_LOCK_R = GPIO_LOCK_KEY; //unlock GPIO Port F
-	GPIO_PORTF_CR_R |= 0x0E; //allow changes to PF1,2,3
-	GPIO_PORTF_AMSEL_R &=~0x0E; //Disable analog function on PF1,2,3
-	GPIO_PORTF_PCTL_R &=~0x0E; 	//Enable regular GPIO on PF1,2,3
-	GPIO_PORTF_DIR_R |=0x0E; 		//output on PF1,2,3
-	GPIO_PORTF_AFSEL_R &=~0x0E; //regular input and output on PF1,2,3
-	GPIO_PORTF_DEN_R |=0x0E; 		//enable digital on PF1,2,3
-}
-
 // final main program
+int m;
 int menu(){
-	int m;
-	//display stuff
-	//wait for user input
-	//return choice
+	m = 0;
+	displaymenu();
+	while(m == 0){
+		m = Switch_In();
+	}
 	return m;
 }
 
-int main1(void){ 
+int main(void){ 
   TExaS_Init();       // Bus clock is 80 MHz 
 	ST7735_InitR(INITR_REDTAB);
-  //ADC_Init();    			// initialize to sample ADC0
-  //PortF_Init();
-  //LCD_OutFix(0);
-  //ST7735_OutString("     cm");
-	//SysTick_Init();
-	//IO_Init();
+  ADC_Init89();    			// initialize to sample ADC0
+	Switch_Init();
   //EnableInterrupts();
-	int m;
   while(1){
 		m = menu();
 		//insert enum - for now, use int response
 		int response;
-		displaymenu();
 		switch(m){
 			case 1: response = playgame(1); break;//level 1 difficulty
 			case 2: response = playgame(2); break;//level 2 difficulty
-			case 3: response = playgame(3); break;//level 3 difficulty
-			case 4: displayexit(); break;
+			//case 3: response = playgame(3); break;//level 3 difficulty
+			case 3: displayexit(); break;
 			default: break;
-		}
+		}//menu result
 		switch(response){
 			case -1: break;//didn't win or lose
-			case 0: displaylose(); break;//lose
-			default: displaylevelwin(); break;//display level win (anything above = number of points earned)
-		}
-	}
+			case 0: 
+					displaylose(); 
+					while(Switch_In() == 0){}
+				break;//lose
+			default: 
+					displaylevelwin(); 
+					while(Switch_In() == 0){} 
+				break;//display level win (anything above = number of points earned)
+		}//game result
+	}//while
 }//main
 
 //ADC DEBUGGING
