@@ -36,6 +36,7 @@ typedef struct actor{
 	int x;// x = -1 when actor doesn't exist
 	int y;
 	int speed;
+	float radius;
 	direction_t direction;
 }actorType;
 typedef struct flag{
@@ -68,6 +69,38 @@ mapIcons map3[10][8] ={
 	{C,O,O,O,O,C,O,C},
 	{C,C,C,C,C,C,C,C},
 };
+/*===================================================================================================================================
+VECTOR FUNCTIONS: These are so that we can later move our sprites when we interface with the joystick.
+=================================================================================================================================*/
+typedef struct 
+{
+	uint16_t x, y; 
+	
+}vector2;
+vector2 addVect(vector2 v1, vector2 v2)
+{
+	vector2 v3;
+	v3.x = v1.x + v2.x;
+	v3.y = v1.y + v2.y;
+	return v3;
+}
+vector2 subVect(vector2 v1, vector2 v2)
+{
+	vector2 v3;
+	v3.x = v1.x - v2.x;
+	v3.y = v1.y - v2.y;
+	return v3;
+}
+void initVect (vector2 *vect, float x, float y)
+{
+	vect->x = x;
+	vect->y = y;
+}
+
+float magnitude (vector2 *v)
+{
+	return (sqrt(v->x*v->x + v->y*v->y));
+}	
 
 /*===================================================================================================================================
 INITIALIZATION FUNCTIONS (and helpers)
@@ -330,8 +363,165 @@ void collideWolves(actorType *wolf, mapIcons map[10][8],int diff){
 		//PlayGameInit(diff);//reset actors and time
 	}//rough collision detection with wolves -- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1fix later, maybe add rocks/obstacles
 }
-void collideFlags(flagType *f){
-	if(f->x!=-1){
+//void collideFlags(flagType *f){
+/*======================================================================
+COLLISION DETECTION
+======================================================================*/
+int collideWithHole(actorType pig, mapIcons levelData[row][col])
+{
+	pig.radius = 3;
+	//Every tile occupies a space of 16x16
+	short i, j;
+	
+	//Check if center collides
+	i = pig.y / 16;
+	j = pig.x / 16;
+	if ( levelData[i][j] == H )
+	{
+		return 1;
+	}
+	
+	//Check if top collides
+	
+	i = (pig.y - pig.radius) / 16;
+	j = pig.x / 16;
+	if ( levelData[i][j] == H )
+	{
+		return 1;
+	}
+	
+	//Check if bottom collides
+	i = (pig.y + pig.radius) / 16;
+	j = pig.x / 16;
+	if ( levelData[i][j] == H )
+	{
+		return 1;
+	}
+	
+	//Check if left collides
+	i = pig.x/ 16;
+	j = (pig.x - pig.radius)/ 16;
+	if ( levelData[i][j] == H )
+	{
+		return 1;
+	}
+	
+	//Check if right collides
+	i = pig.y / 16;
+	j = (pig.x + pig.radius)/ 16;
+	if ( levelData[i][j] == H )
+	{
+		return 1;
+	}
+	return 0;
+};
+
+//-----------------------------------------------
+int collideWithApple(actorType pig, mapIcons levelData[row][col])
+{
+	//Every tile occupies a space of 16x16
+	short i, j;
+	
+	//Check if center collides
+	i = pig.y / 16;
+	j = pig.x / 16;
+	if ( levelData[i][j] == H )
+	{
+		return 1;
+	}
+	
+	//Check if top collides
+	
+	i = (pig.y - pig.radius) / 16;
+	j = pig.x / 16;
+	if ( levelData[i][j] == H )
+	{
+		return 1;
+	}
+	
+	//Check if bottom collides
+	i = (pig.y + pig.radius) / 16;
+	j = pig.x / 16;
+	if ( levelData[i][j] == H )
+	{
+		return 1;
+	}
+	
+	//Check if left collides
+	i = pig.x/ 16;
+	j = (pig.x - pig.radius)/ 16;
+	if ( levelData[i][j] == H )
+	{
+		return 1;
+	}
+	
+	//Check if right collides
+	i = pig.y / 16;
+	j = (pig.x + pig.radius)/ 16;
+	if ( levelData[i][j] == H )
+	{
+		return 1;
+	}
+	return 0;
+}
+
+//---------------------------------------------------------
+short entitiesColliding(actorType pig, actorType Wolves[WOLVES_SIZE])
+{
+	vector2 distance;
+	for (int i = 0; i < WOLVES_SIZE ; i++)
+	{
+		distance.x = abs(pig.x -  Wolves[i].x);
+		distance.y = abs(pig.y -  Wolves[i].y);
+		
+		if (magnitude(&distance) < pig.radius + Wolves[i].radius)
+		{
+			return 1;
+		}
+	}	
+	return 0;
+}
+//---------------------------------------------------------
+short collideWithWolf (game *G)
+{
+	int i;
+	for (i = 0; i < 5; i++)
+	{
+		if (G->enemy[i].type != NONE)
+		{
+			if (entitiesColliding(&G->player, &G->enemy[i])== 1)
+			{
+				return 1;
+			}
+		}
+		
+	}
+	return 0;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------
+void handleCollisions(game *G)
+{
+	if (collideWithApple(&G->player, G->levelData))
+	{
+		G->levelData[(int)(G->player.position.y/16)][(int)(G->player.position.x/16)] = O;
+		G->score = G->score+50;
+	}
+	else if (collideWithWolf(G)||(collideWithHole(&G->player,  G->levelData)))
+	{
+		G->lives--;
+		if (G->lives > 0 )
+		{
+		respawn (G);
+		}
+		else
+		{
+			//This is game over.
+		}
+	}
+}
+
+/*if(f->x!=-1){
 		if((pig.x==f->x)&&(pig.y==f->y)){
 			flagcount++;
 			score = score+10;//increment score based on flags
@@ -339,7 +529,7 @@ void collideFlags(flagType *f){
 		}
 	}
 }
-/*void updatemap(int diff){
+void updatemap(int diff){
 	switch(diff){
 		case 1:
 			for (int i = 0; i< FLAGS_TOTAL;i++){
