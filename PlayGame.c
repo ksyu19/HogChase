@@ -12,6 +12,7 @@
 #include <math.h>
 #include "Graphics.h"
 #include "Display.h"
+#include <stdio.h>
 
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
@@ -101,7 +102,165 @@ float magnitude (vector2 *v)
 {
 	return (sqrt(v->x*v->x + v->y*v->y));
 }	
+//--------------------------------------------------------------------------------------------------------------------------------
+int collideWithApple(actorType pig, mapIcons levelData[row][col])
+{
+	//Every tile occupies a space of 16x16
+	short i, j;
+	
+	//Check if center collides
+	i = pig.y / 16;
+	j = pig.x / 16;
+	if ( levelData[i][j] == A )
+	{
+		return 1;
+	}
+	
+	//Check if top collides
+	
+	i = (pig.y - pig.radius) / 16;
+	j = pig.x / 16;
+	if ( levelData[i][j] == A )
+	{
+		return 1;
+	}
+	
+	//Check if bottom collides
+	i = (pig.y + pig.radius) / 16;
+	j = pig.x / 16;
+	if ( levelData[i][j] == A )
+	{
+		return 1;
+	}
+	
+	//Check if left collides
+	i = pig.x/ 16;
+	j = (pig.x - pig.radius)/ 16;
+	if ( levelData[i][j] == A )
+	{
+		return 1;
+	}
+	
+	//Check if right collides
+	i = pig.y / 16;
+	j = (pig.x + pig.radius)/ 16;
+	if ( levelData[i][j] == A )
+	{
+		return 1;
+	}
+	return 0;
+}
+int collideWithWall(actorType pig, mapIcons levelData[row][col])
+{
+	pig.radius = 3;
+	//Every tile occupies a space of 16x16
+	short i, j;
+	
+	//Check if center collides
+	i = pig.y / 16;
+	j = pig.x / 16;
+	if ( levelData[i][j] == C	)
+	{
+		return 1;
+	}
+	
+	//Check if top collides
+	
+	i = (pig.y - pig.radius) / 16;
+	j = pig.x / 16;
+	if ( levelData[i][j] == C )
+	{
+		return 1;
+	}
+	
+	//Check if bottom collides
+	i = (pig.y + pig.radius) / 16;
+	j = pig.x / 16;
+	if ( levelData[i][j] == C )
+	{
+		return 1;
+	}
+	
+	//Check if left collides
+	i = pig.x/ 16;
+	j = (pig.x - pig.radius)/ 16;
+	if ( levelData[i][j] == C )
+	{
+		return 1;
+	}
+	
+	//Check if right collides
+	i = pig.y / 16;
+	j = (pig.x + pig.radius)/ 16;
+	if ( levelData[i][j] == C )
+	{
+		return 1;
+	}
+	return 0;
+};
 
+/*======================================================================
+COLLISION DETECTION
+======================================================================*/
+int collideWithHole(actorType pig, mapIcons levelData[row][col])
+{
+	pig.radius = 3;
+	//Every tile occupies a space of 16x16
+	short i, j;
+	
+	//Check if center collides
+	i = pig.y / 16;
+	j = pig.x / 16;
+	if ( levelData[i][j] == H )
+	{
+		return 1;
+	}
+	
+	//Check if top collides
+	
+	i = (pig.y - pig.radius) / 16;
+	j = pig.x / 16;
+	if ( levelData[i][j] == H )
+	{
+		return 1;
+	}
+	
+	//Check if bottom collides
+	i = (pig.y + pig.radius) / 16;
+	j = pig.x / 16;
+	if ( levelData[i][j] == H )
+	{
+		return 1;
+	}
+	
+	//Check if left collides
+	i = pig.x/ 16;
+	j = (pig.x - pig.radius)/ 16;
+	if ( levelData[i][j] == H )
+	{
+		return 1;
+	}
+	
+	//Check if right collides
+	i = pig.y / 16;
+	j = (pig.x + pig.radius)/ 16;
+	if ( levelData[i][j] == H )
+	{
+		return 1;
+	}
+	return 0;
+};
+
+//------------------------------------------------------------------------------------------------------------------------------------
+void handleCollisions(actorType pig, mapIcons map[row][col])
+{
+	if (collideWithApple(pig, map)== 1)
+	{
+		map[(int)(pig.y/16)][(int)(pig.x/16)] = O;
+		ST7735_DrawBitmap((int)(pig.y/16), (int)(pig.x/16),grass,16,16);
+		score = score+50;
+	}
+}
 /*===================================================================================================================================
 INITIALIZATION FUNCTIONS (and helpers)
 =====================================================================================================================================*/
@@ -261,9 +420,11 @@ int checkCanMove(direction_t dir, actorType *a, mapIcons map[10][8]){
 	int move = 0;//0 = can't move, 1 = can move
 	int loc;
 			switch(dir){
-			case NORTH:
+	if ((collideWithWall(pig, map)!= 1))
+	{		
+				case NORTH:
 				loc = (*a).y-(*a).speed;
-				if (map[loc][(*a).x] != C)
+																	//if (map[loc][(*a).x] != C)
 					move = 1;
 				break;
 			case EAST:
@@ -283,6 +444,8 @@ int checkCanMove(direction_t dir, actorType *a, mapIcons map[10][8]){
 				break;
 			case NONE: break;
 		}//level 1
+			move = 0;
+		} 
 	return move;	
 }
 
@@ -362,163 +525,6 @@ void collideWolves(actorType *wolf, mapIcons map[10][8],int diff){
 		initMap(map,diff);
 		//PlayGameInit(diff);//reset actors and time
 	}//rough collision detection with wolves -- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1fix later, maybe add rocks/obstacles
-}
-//void collideFlags(flagType *f){
-/*======================================================================
-COLLISION DETECTION
-======================================================================*/
-int collideWithHole(actorType pig, mapIcons levelData[row][col])
-{
-	pig.radius = 3;
-	//Every tile occupies a space of 16x16
-	short i, j;
-	
-	//Check if center collides
-	i = pig.y / 16;
-	j = pig.x / 16;
-	if ( levelData[i][j] == H )
-	{
-		return 1;
-	}
-	
-	//Check if top collides
-	
-	i = (pig.y - pig.radius) / 16;
-	j = pig.x / 16;
-	if ( levelData[i][j] == H )
-	{
-		return 1;
-	}
-	
-	//Check if bottom collides
-	i = (pig.y + pig.radius) / 16;
-	j = pig.x / 16;
-	if ( levelData[i][j] == H )
-	{
-		return 1;
-	}
-	
-	//Check if left collides
-	i = pig.x/ 16;
-	j = (pig.x - pig.radius)/ 16;
-	if ( levelData[i][j] == H )
-	{
-		return 1;
-	}
-	
-	//Check if right collides
-	i = pig.y / 16;
-	j = (pig.x + pig.radius)/ 16;
-	if ( levelData[i][j] == H )
-	{
-		return 1;
-	}
-	return 0;
-};
-
-//-----------------------------------------------
-int collideWithApple(actorType pig, mapIcons levelData[row][col])
-{
-	//Every tile occupies a space of 16x16
-	short i, j;
-	
-	//Check if center collides
-	i = pig.y / 16;
-	j = pig.x / 16;
-	if ( levelData[i][j] == H )
-	{
-		return 1;
-	}
-	
-	//Check if top collides
-	
-	i = (pig.y - pig.radius) / 16;
-	j = pig.x / 16;
-	if ( levelData[i][j] == H )
-	{
-		return 1;
-	}
-	
-	//Check if bottom collides
-	i = (pig.y + pig.radius) / 16;
-	j = pig.x / 16;
-	if ( levelData[i][j] == H )
-	{
-		return 1;
-	}
-	
-	//Check if left collides
-	i = pig.x/ 16;
-	j = (pig.x - pig.radius)/ 16;
-	if ( levelData[i][j] == H )
-	{
-		return 1;
-	}
-	
-	//Check if right collides
-	i = pig.y / 16;
-	j = (pig.x + pig.radius)/ 16;
-	if ( levelData[i][j] == H )
-	{
-		return 1;
-	}
-	return 0;
-}
-
-//---------------------------------------------------------
-short entitiesColliding(actorType pig, actorType Wolves[WOLVES_SIZE])
-{
-	vector2 distance;
-	for (int i = 0; i < WOLVES_SIZE ; i++)
-	{
-		distance.x = abs(pig.x -  Wolves[i].x);
-		distance.y = abs(pig.y -  Wolves[i].y);
-		
-		if (magnitude(&distance) < pig.radius + Wolves[i].radius)
-		{
-			return 1;
-		}
-	}	
-	return 0;
-}
-//---------------------------------------------------------
-short collideWithWolf (game *G)
-{
-	int i;
-	for (i = 0; i < 5; i++)
-	{
-		if (G->enemy[i].type != NONE)
-		{
-			if (entitiesColliding(&G->player, &G->enemy[i])== 1)
-			{
-				return 1;
-			}
-		}
-		
-	}
-	return 0;
-}
-
-//------------------------------------------------------------------------------------------------------------------------------------
-void handleCollisions(game *G)
-{
-	if (collideWithApple(&G->player, G->levelData))
-	{
-		G->levelData[(int)(G->player.position.y/16)][(int)(G->player.position.x/16)] = O;
-		G->score = G->score+50;
-	}
-	else if (collideWithWolf(G)||(collideWithHole(&G->player,  G->levelData)))
-	{
-		G->lives--;
-		if (G->lives > 0 )
-		{
-		respawn (G);
-		}
-		else
-		{
-			//This is game over.
-		}
-	}
 }
 
 /*if(f->x!=-1){
@@ -639,8 +645,8 @@ int playgame(int difficulty){//ADD SOUND!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 					collideWolves(&Wolves[i],map,difficulty);
 				}
 			}
-			for(int i = 0; i< FLAGS_TOTAL; i++){
-				collideFlags(&Flags[i]);
+			//for(int i = 0; i< FLAGS_TOTAL; i++){
+				//collideFlags(&Flags[i]);
 			}
 			//updateradar();
 			if(lives == 0){
@@ -653,8 +659,8 @@ int playgame(int difficulty){//ADD SOUND!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				return winlose;
 			}
 			status = 0;
-		}//if
+		//if
 		}//while
 		return -1;
-}
+	}
 
