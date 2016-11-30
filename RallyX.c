@@ -22,6 +22,8 @@
 #include "tm4c123gh6pm.h"
 #include "PlayGame.h"
 #include "Display.h"
+#include "Sound.h"
+#include "Switch.h"
 
 
 //*****the first three main programs are for debugging *****
@@ -63,10 +65,10 @@ int menu(){
 	return m;
 }
 
-int main(void){ 
-  //TExaS_Init();       // Bus clock is 80 MHz 
-	//ST7735_InitR(INITR_REDTAB);
-  //ADC_Init();    			// initialize to sample ADC1
+int main1(void){ 
+  TExaS_Init();       // Bus clock is 80 MHz 
+	ST7735_InitR(INITR_REDTAB);
+  //ADC_Init();    			// initialize to sample ADC0
   //PortF_Init();
   //LCD_OutFix(0);
   //ST7735_OutString("     cm");
@@ -95,29 +97,29 @@ int main(void){
 }//main
 
 //ADC DEBUGGING
-
 /*
+
 uint32_t ADCvalue[2];
 char Pos;
 char ConvertTest(uint32_t input[2]){//CALIBRATE LATER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//data[0];//North/South (vert - PE5)
   //data[1];//East/West (horz - PE4)
 	char output = 0;
-	if (4000>input[0]&&input[0]>3500){
+	if (4096>input[0]&&input[0]>=3500){
 		output = 'N';
 	}
-	else if (500>input[0]&&input[0]>0){
+	else if (500>=input[0]&&input[0]>0){
 		output = 'S';
 	}
-	else if (500>input[1]&&input[1]>0){
+	else if (500>=input[1]&&input[1]>0){
 		output = 'E';
 	}
-	else if (4000>input[1]&&input[1]>3500){
+	else if (4096>input[1]&&input[1]>=3500){
 		output = 'W';
 	}
   return output;
 }
-int mainADC(void){ 
+int main(void){ 
   TExaS_Init();         // Bus clock is 80 MHz 
   ST7735_InitR(INITR_REDTAB); 
   PortF_Init();
@@ -131,10 +133,62 @@ int mainADC(void){
     //LCD_OutDec(ADCvalue[0]); ST7735_OutString("vert "); //print vertical
     //ST7735_SetCursor(6,0);
 		//LCD_OutDec(ADCvalue[1]); ST7735_OutString("horiz ");  //print horizontal
-    //LCD_OutFix(Position);
 		for(int i = 0; i<266667; i++){
 		}
   }
 }   
 */
+//SWITCH DEBUGGING
+///*
+int main(void){
+	TExaS_Init();         // Bus clock is 80 MHz 
+  ST7735_InitR(INITR_REDTAB); 
+	Switch_Init();
+	uint32_t input, previous; 
+	previous = 0;
+	
+	while(1){
+		input = Switch_In(); 
+		if(input&&(previous ==0)){ // just pressed 
+			switch(input){
+				case 1: ST7735_OutString("first button");break;
+				case 2: ST7735_OutString("second button");break;
+				case 4: ST7735_OutString("third button");break;
+				default:break; 
+			}
+		} 
+		previous = input;
+		for(int i = 0; i<266667; i++){
+		}
+	}
+}
+//*/
+/*
 //SOUND DEBUGGING
+int main(void){ 
+  TExaS_Init();         // Bus clock is 80 MHz 
+  ST7735_InitR(INITR_REDTAB); 
+	Switch_Init();
+  Sound_Init();
+	uint32_t input, previous; 
+	previous = 0;
+	
+  while(1){
+		input = Switch_In(); 
+		if(input&&(previous ==0)){ // just pressed 
+			switch(input){
+				case 1: Sound_Music();break;
+				case 2: Sound_Chomp();break;
+				//case 3: Sound_Play(E);break;
+				case 4: Music_Stop();break;
+				//case 5: Sound_Play(G);break;
+				//case 6: Sound_Play(A);break;
+				//case 7: Sound_Play(B);break;
+				default:break; 
+			}
+		} 
+		previous = input;
+		//Delay10ms(); //remove switch bounce 
+  }         
+}   
+*/
