@@ -37,9 +37,9 @@ void EnableInterrupts(void);  // Enable interrupts
 
 // final main program
 int m;
-int menu(){
+int menu(int totalScore){
 	m = 0;
-	displaymenu();
+	displaymenu(totalScore);
 	while(m == 0){
 		m = Switch_In();
 	}
@@ -52,29 +52,20 @@ int main(void){
   ADC_Init89();    			// initialize to sample ADC0
 	Switch_Init();
   //EnableInterrupts();
+	int totalScore = 0;
   while(1){
 		ST7735_FillScreen(0);            // set screen to black
-		m = menu();
+		m = menu(totalScore);
 		//insert enum - for now, use int response
 		int response;
 		switch(m){
 			case 1: response = playgame(1); break;//level 1 difficulty
 			case 2: response = playgame(2); break;//level 2 difficulty
-			//case 3: response = playgame(3); break;//level 3 difficulty
-			case 3: displayexit(); break;
+			case 4: response = playgame(3); break;//level 3 difficulty
+			//case 3: displayexit(); break;
 			default: break;
 		}//menu result
-		switch(response){
-			case -1: break;//didn't win or lose
-			case 0: 
-					displaylose(); 
-					while(Switch_In() == 0){}
-				break;//lose
-			default: 
-					displaylevelwin(response); 
-					while(Switch_In() == 0){} 
-				break;//display level win (anything above = number of points earned)
-		}//game result
+		totalScore = response + totalScore;
 	}//while
 }//main
 

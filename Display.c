@@ -19,15 +19,23 @@
 
 void displayradar(void){
 };
-void displaymenu(void){
+void displaymenu(int totalScore){
 	ST7735_SetCursor(0,0);
-	ST7735_OutString("Instructions: \nNavigate the pig\nwith the joystick\nto collect all apples.\nAvoid wolves, holes, and \nrunning out of time!\n Menu: \n 1: Level 1 \n 2: Level 2 \n 3: Exit");
+	ST7735_OutString("Instructions: \nNavigate the pig\nwith the joystick\nto collect all apples.\nAvoid wolves, holes, and \nrunning out of time!\n Menu: \n 1: Level 1 \n 2: Level 2 \n 3: Level 3");
+	ST7735_OutString("\nTotal Score: ");
+	LCD_OutDec(totalScore);
 };
-void displaylevelwin(int score){
+void displaylevelwin(int time, int lives, int score){
 	ST7735_FillScreen(0);            // set screen to black
 	ST7735_SetCursor(0,0);
-	ST7735_OutString("You Win! \nScore: \n");
+	ST7735_OutString("You Win! \n\nRaw Score: ");
 	LCD_OutDec(score);
+	ST7735_OutString("\nTime Bonus: ");
+	LCD_OutDec(time);
+	ST7735_OutString("\nLives Bonus: ");
+	LCD_OutDec(lives*100);
+	ST7735_OutString("\n\nLevel Score: ");
+	LCD_OutDec(score+time+lives*100);
 	ST7735_OutString("\nPress any button\nto return to menu.");
 };
 void displayoverallwin(void){

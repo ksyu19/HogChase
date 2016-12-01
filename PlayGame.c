@@ -75,7 +75,7 @@ void initMap(mapIcons map[ROW][COL], int diff){
 			{X,X,X,O,O,X,X,X},
 			{A,O,O,O,O,O,O,A},
 			{O,X,O,X,X,O,X,O},
-			{O,O,A,X,X,A,O,W}
+			{O,O,A,X,X,A,O,O}
 		};
 		int k,l;
 		for (k = 0; k < ROW; k++){
@@ -86,16 +86,16 @@ void initMap(mapIcons map[ROW][COL], int diff){
 	}//level1
 	if (lives ==3&&diff == 2){
 		mapIcons map2[ROW][COL]={
-			{A,O,O,O,O,O,P,O},
-			{O,X,X,O,O,X,X,O},
-			{O,X,O,O,O,O,X,O},
-			{O,O,O,X,X,O,A,O},
-			{O,O,X,A,W,X,O,O},
-			{X,O,X,O,O,X,O,X},
-			{O,O,X,O,O,X,O,O},
-			{O,O,O,O,O,W,O,O},
-			{O,O,X,O,O,O,X,O},
-			{X,A,O,O,X,O,A,O}
+			{P,O,O,X,X,O,O,A},
+			{O,X,O,X,X,O,X,O},
+			{O,X,O,X,X,O,X,O},
+			{O,O,O,O,O,O,O,O},
+			{O,O,X,X,X,X,O,O},
+			{O,O,O,O,O,O,O,O},
+			{X,X,X,O,O,X,X,X},
+			{A,O,O,O,O,O,O,A},
+			{O,X,O,X,X,O,X,O},
+			{O,O,A,X,X,A,O,W}
 		};
 		int k,l;
 		for (k = 0; k < ROW; k++){
@@ -106,16 +106,16 @@ void initMap(mapIcons map[ROW][COL], int diff){
 	}//level2
 	if (lives ==3&&diff == 3){
 		mapIcons map3[ROW][COL]= { 
-			{X,X,X,X,X,X,X,X},
-			{X,A,O,O,O,O,A,X},
-			{X,X,X,O,O,X,X,X},
-			{X,O,X,A,O,O,O,X},
-			{X,O,O,O,X,X,O,X},
-			{X,O,X,P,O,O,A,X},
-			{X,O,O,O,O,O,X,X},
-			{X,O,X,X,O,W,O,X},
-			{X,A,O,O,O,X,W,X},
-			{X,X,X,X,X,X,X,X}
+			{A,O,O,O,O,O,P,O},
+			{O,X,X,O,O,X,X,O},
+			{O,X,O,O,O,O,X,O},
+			{O,O,O,X,X,O,A,O},
+			{O,O,X,A,W,X,O,O},
+			{X,O,X,O,O,X,O,X},
+			{O,O,X,O,O,X,O,O},
+			{O,O,O,O,O,W,O,O},
+			{O,O,X,O,O,O,X,O},
+			{X,A,O,O,X,O,A,O}
 		};
 		int k,l;
 		for (k = 0; k < ROW; k++){
@@ -404,7 +404,7 @@ void SysTick_Init(void){
   NVIC_ST_CTRL_R = 0x0007;																		// enable SysTick with core clock and interrupts
 	status = 0;
 }
-void SysTick_Handler(void){// every 25 ms
+void SysTick_Handler(void){// every 33 ms
 	ADC_In89(ADCdata);
 	status = 1;
 	time--;
@@ -465,11 +465,15 @@ int playgame(int difficulty){
 			}
 			if(lives == 0){
 				winlose = 0;
+				displaylose(); 
+				while(Switch_In() == 0){}
 				return winlose;
 			}
 			if (flagcount == FLAGS_TOTAL){
-				score = score + time*10;
+				displaylevelwin(time/30, lives, score); 
+				score = score + time/30 + lives*100;
 				winlose = score;
+				while(Switch_In() == 0){} 
 				return winlose;
 			}
 			status = 0;
