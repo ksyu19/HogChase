@@ -53,6 +53,7 @@ int main(void){
 	Switch_Init();
   //EnableInterrupts();
   while(1){
+		ST7735_FillScreen(0);            // set screen to black
 		m = menu();
 		//insert enum - for now, use int response
 		int response;
@@ -70,7 +71,7 @@ int main(void){
 					while(Switch_In() == 0){}
 				break;//lose
 			default: 
-					displaylevelwin(); 
+					displaylevelwin(response); 
 					while(Switch_In() == 0){} 
 				break;//display level win (anything above = number of points earned)
 		}//game result

@@ -17,27 +17,38 @@
 #include <stdint.h>
 #include "ST7735.h"
 
-
 void displayradar(void){
 };
 void displaymenu(void){
 	ST7735_SetCursor(0,0);
 	ST7735_OutString("Instructions: \nNavigate the pig\nwith the joystick\nto collect all apples.\nAvoid wolves, holes, and \nrunning out of time!\n Menu: \n 1: Level 1 \n 2: Level 2 \n 3: Exit");
 };
-void displaylevelwin(void){
+void displaylevelwin(int score){
 	ST7735_FillScreen(0);            // set screen to black
 	ST7735_SetCursor(0,0);
-	ST7735_OutString("You Win! \nSelect 1 to return to menu.");
+	ST7735_OutString("You Win! \nScore: \n");
+	LCD_OutDec(score);
+	ST7735_OutString("\nPress any button\nto return to menu.");
 };
 void displayoverallwin(void){
 };
 void displaylose(void){
 	ST7735_FillScreen(0);            // set screen to black
 	ST7735_SetCursor(0,0);
-	ST7735_OutString("Sorry, you lost :(. \nSelect 1 to return to menu.");
+	ST7735_OutString("Sorry, you lost :(. \nPress any button\nto return to menu.");
 };
 void displayexit(void){
 	ST7735_FillScreen(0);            // set screen to black
 	ST7735_SetCursor(0,0);
 	ST7735_OutString("Goodbye!");
+};
+void displayLives(int lives,int time){
+	ST7735_FillScreen(0);            // set screen to black
+	ST7735_SetCursor(0,0);
+	if(time == 0){
+		ST7735_OutString("Out of Time!\n");
+	}
+	ST7735_OutString("Lives Left: ");
+	LCD_OutDec(lives);
+	ST7735_OutString("\nPress any button\n to continue");
 };

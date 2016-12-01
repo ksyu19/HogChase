@@ -76,8 +76,3 @@ void Sound_Music(void){
  Music_Play(In_Game_Music_short,24534);
 };
 */
-/*
-void Sound_Invader(void){
-	Sound_Play(fastinvader1,982);
-}
-*/
