@@ -13,6 +13,7 @@
 #include "Graphics.h"
 #include "Display.h"
 #include "Sound.h"
+#include "Timer1.h"
 
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
@@ -50,7 +51,6 @@ actorType pig;
 actorType Wolves[WOLVES_SIZE];
 flagType Flags[FLAGS_TOTAL];
 int lives;
-int winlose;
 int flagcount;
 int time;
 int score;
@@ -66,16 +66,16 @@ void initMap(mapIcons map[ROW][COL], int diff){
 	f = 0;
 	if (lives ==3&&diff == 1){
 		mapIcons map1[ROW][COL]= { 
-			{P,O,O,X,X,O,O,A},
+			{P,O,O,X,X,O,O,S},
 			{O,X,O,X,X,O,X,O},
 			{O,X,O,X,X,O,X,O},
 			{O,O,O,O,O,O,O,O},
 			{O,O,X,X,X,X,O,O},
 			{O,O,O,O,O,O,O,O},
 			{X,X,X,O,O,X,X,X},
-			{A,O,O,O,O,O,O,A},
+			{S,O,O,O,O,O,O,S},
 			{O,X,O,X,X,O,X,O},
-			{O,O,A,X,X,A,O,O}
+			{O,O,S,X,X,S,O,O}
 		};
 		int k,l;
 		for (k = 0; k < ROW; k++){
@@ -86,16 +86,16 @@ void initMap(mapIcons map[ROW][COL], int diff){
 	}//level1
 	if (lives ==3&&diff == 2){
 		mapIcons map2[ROW][COL]={
-			{P,O,O,X,X,O,O,A},
+			{P,O,O,X,X,O,O,T},
 			{O,X,O,X,X,O,X,O},
 			{O,X,O,X,X,O,X,O},
 			{O,O,O,O,O,O,O,O},
 			{O,O,X,X,X,X,O,O},
 			{O,O,O,O,O,O,O,O},
 			{X,X,X,O,O,X,X,X},
-			{A,O,O,O,O,O,O,A},
+			{T,O,O,O,O,O,O,T},
 			{O,X,O,X,X,O,X,O},
-			{O,O,A,X,X,A,O,W}
+			{O,O,T,X,X,T,O,W}
 		};
 		int k,l;
 		for (k = 0; k < ROW; k++){
@@ -106,16 +106,16 @@ void initMap(mapIcons map[ROW][COL], int diff){
 	}//level2
 	if (lives ==3&&diff == 3){
 		mapIcons map3[ROW][COL]= { 
-			{A,O,O,O,O,O,P,O},
+			{B,O,O,O,O,O,P,O},
 			{O,X,X,O,O,X,X,O},
 			{O,X,O,O,O,O,X,O},
-			{O,O,O,X,X,O,A,O},
-			{O,O,X,A,W,X,O,O},
+			{O,O,O,X,X,O,B,O},
+			{O,O,X,B,W,X,O,O},
 			{X,O,X,O,O,X,O,X},
 			{O,O,X,O,O,X,O,O},
 			{O,O,O,O,O,W,O,O},
 			{O,O,X,O,O,O,X,O},
-			{X,A,O,O,X,O,A,O}
+			{X,B,O,O,X,O,B,O}
 		};
 		int k,l;
 		for (k = 0; k < ROW; k++){
@@ -131,7 +131,7 @@ void initMap(mapIcons map[ROW][COL], int diff){
 					//draw Wall bitmap with top left corner of bitmap at pixel coordinate (j*16, i*16)
 					ST7735_DrawBitmap(j*16,(i+1)*16,wall,16,16);
 				}
-				else if (map[i][j] == A)
+				else if (map[i][j] == S||map[i][j] == T||map[i][j] == B)
 				{
 					//draw apple bitmap with top left corner of bitmap at pixel coordinate (j*16, i*16)
 					Flags[f].r = i*16;
@@ -170,16 +170,24 @@ void initMap(mapIcons map[ROW][COL], int diff){
 	for (int i = f; i<FLAGS_TOTAL;i++){
 		Flags[i].r = -1;
 	}//flags that don't exist
-	time = 5400; //3 min to play each round
-}//Only call this function to initialize map during levels and between deaths
+}//Only call this function to initialize map
 
-void displayActors(){
+void displayActors(int diff){
 	//map[0][0] is the top left tile on the screen.
 	//map[7][9] is the bottom right tile on the screen
 	//Draw Bitmaps by looping through the array and rendering appropriate tiles.
 	for (int i = 0; i<FLAGS_TOTAL; i++){
 		if (Flags[i].r!=-1){
-			ST7735_DrawBitmap(Flags[i].c,Flags[i].r+16,apple,16,16);
+			switch(diff){
+				case 1: 
+					ST7735_DrawBitmap(Flags[i].c,Flags[i].r+16,straw,16,16);
+					break;
+				case 2:
+					ST7735_DrawBitmap(Flags[i].c,Flags[i].r+16,twig,16,16);
+					break;
+				case 3:
+					ST7735_DrawBitmap(Flags[i].c,Flags[i].r+16,brick,16,16);
+			}
 		}
 	}
 	ST7735_DrawBitmap(pig.c,pig.r+16,pigFront,16,16);
@@ -188,6 +196,37 @@ void displayActors(){
 			ST7735_DrawBitmap(Wolves[i].c,Wolves[i].r+16,wolf,16,16);
 		}
 	}
+}
+void delayTouch(void){
+	while(Switch_In() !=0){
+	}
+}//debounce the switch
+void delay(int ms){
+	int delayTime = 13333*ms;
+	for (int i=0;i<delayTime;i++){
+	}
+}//roughly delay 500ms (80000*500/6) <-6 is just an experimentally derived constant
+void resumeGame(mapIcons map[ROW][COL],int diff){
+	int i, j;
+	for (i = 0; i < ROW; i++){
+		for (j = 0; j < COL; j++){
+				if (map[i][j] == X)
+				{
+					//draw Wall bitmap with top left corner of bitmap at pixel coordinate (j*16, i*16)
+					ST7735_DrawBitmap(j*16,(i+1)*16,wall,16,16);
+				}
+				else if (map[i][j] == H)
+				{
+					ST7735_DrawBitmap(j*16,(i+1)*16,hole,16,16);
+				}
+				else 
+				{
+					//draw air ("grass")
+					ST7735_DrawBitmap(j*16,(i+1)*16,grass,16,16);
+				}
+			}//inner for
+	}//outer for
+	displayActors(diff);
 }
 
 /*===================================================================================================================================
@@ -298,20 +337,25 @@ void moveEnemy(actorType *wolf, mapIcons map[ROW][COL]){
 	move(wolf, map);
 }//moveEnemy
 void collideWolves(actorType *wolf, mapIcons map[ROW][COL],int diff){
-	int wolftop = wolf->r;
-	int wolfbot = wolf->r+15;
-	int wolfr = wolf ->c+15;
-	int wolfl = wolf->c;
-	int pigtop	= pig.r;
- 	int pigbot = pig.r+15;
-	int pigr = pig.c+15;
-  int pigl =  pig.c;
+	int wolftop = wolf->r+2;
+	int wolfbot = wolf->r+15-2;
+	int wolfr = wolf ->c+15-2;
+	int wolfl = wolf->c+2;
+	int pigtop	= pig.r+2;
+ 	int pigbot = pig.r+15-2;
+	int pigr = pig.c+15-2;
+  int pigl =  pig.c+2;
 	if(wolftop<=pigbot&&wolfbot>=pigtop&&wolfr>=pigl&&wolfl<=pigr)
 	{
 		lives--;
 		Sound_Chomp();
+		delay(500);
 		displayLives(lives,time); 
+		DisableInterrupts();
 		while(Switch_In() == 0){}
+		delayTouch();
+		delay(100);//prevent bounce
+		EnableInterrupts();
 		initMap(map,diff);
 	}
 }
@@ -335,9 +379,12 @@ void collideFlags(mapIcons map[ROW][COL]){
 		pigc2 = pigc; 
 	}
 	
-	if (map[pigr][pigc] == A) {
+	if (map[pigr][pigc] == S||map[pigr][pigc] == T||map[pigr][pigc] == B) {
 		flagcount++;
-		score = score+10;//increment score based on flags
+		//increment score based on flags
+		if (map[pigr][pigc] == S){score = score+10;}
+		if (map[pigr][pigc] == T){score = score+20;}
+		if (map[pigr][pigc] == B){score = score+30;}
 		map[pigr][pigc] = O;
 		ST7735_DrawBitmap(pigc*16,pigr*16+16,grass,16,16); 
 		for (int k = 0; k<FLAGS_TOTAL;k++){
@@ -348,9 +395,12 @@ void collideFlags(mapIcons map[ROW][COL]){
 			}
 		Sound_Flag();
 	}
-	if (map[pigr2][pigc] == A) {
+	if (map[pigr2][pigc] == S||map[pigr2][pigc] == T||map[pigr2][pigc] == B) {
 		flagcount++;
-		score = score+10;//increment score based on flags
+		//increment score based on flags
+		if (map[pigr2][pigc] == S){score = score+10;}
+		if (map[pigr2][pigc] == T){score = score+20;}
+		if (map[pigr2][pigc] == B){score = score+30;}
 		map[pigr2][pigc] = O;
 		ST7735_DrawBitmap(pigc*16,pigr2*16+16,grass,16,16); 
 		for (int k = 0; k<FLAGS_TOTAL;k++){
@@ -361,9 +411,12 @@ void collideFlags(mapIcons map[ROW][COL]){
 			}
 		Sound_Flag();
 	}
-	if (map[pigr][pigc2] == A) {
+	if (map[pigr][pigc2] == S||map[pigr][pigc2] == T||map[pigr][pigc2] == B) {
 		flagcount++;
-		score = score+10;//increment score based on flags
+		//increment score based on flags
+		if (map[pigr][pigc2] == S){score = score+10;}
+		if (map[pigr][pigc2] == T){score = score+20;}
+		if (map[pigr][pigc2] == B){score = score+30;}
 		map[pigr][pigc2] = O;
 		ST7735_DrawBitmap(pigc2*16,pigr*16+16,grass,16,16); 
 		for (int k = 0; k<FLAGS_TOTAL;k++){
@@ -374,9 +427,12 @@ void collideFlags(mapIcons map[ROW][COL]){
 			}
 		Sound_Flag();
 	}
-	if (map[pigr2][pigc2] == A) {
+	if (map[pigr2][pigc2] == S||map[pigr2][pigc2] == T||map[pigr2][pigc2] == B) {
 		flagcount++;
-		score = score+10;//increment score based on flags
+		//increment score based on flags
+		if (map[pigr2][pigc2] == S){score = score+10;}
+		if (map[pigr2][pigc2] == T){score = score+20;}
+		if (map[pigr2][pigc2] == B){score = score+30;}
 		map[pigr2][pigc2] = O;
 		ST7735_DrawBitmap(pigc2*16,pigr2*16+16,grass,16,16); 
 		for (int k = 0; k<FLAGS_TOTAL;k++){
@@ -393,23 +449,6 @@ void updateradar(){
 	//update the radar!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//if flag[i] == -1, then do not display
 }
-uint32_t ADCdata[2];
-char status;
-void SysTick_Init(void){
-	//SYSTICK Initialization
-	NVIC_ST_CTRL_R = 0;                   											// disable SysTick during setup
-  NVIC_ST_RELOAD_R = 2666667;  																// reload value for interrupts at 30 Hz (0.03 s)
-  NVIC_ST_CURRENT_R = 0;                											// any write to current clears it
-  NVIC_SYS_PRI3_R = (NVIC_SYS_PRI3_R&0x00FFFFFF)|0x20000000;  // priority 1   
-  NVIC_ST_CTRL_R = 0x0007;																		// enable SysTick with core clock and interrupts
-	status = 0;
-}
-void SysTick_Handler(void){// every 33 ms
-	ADC_In89(ADCdata);
-	status = 1;
-	time--;
-}
-
 direction_t Convert(uint32_t input[2]){
 	//data[0];//North/South (vert - PE5)
   //data[1];//East/West (horz - PE4)
@@ -428,20 +467,77 @@ direction_t Convert(uint32_t input[2]){
 	}
   return output;
 }
+uint32_t ADCdata[2];
+char status;
+void SysTick_Init(void){
+	//SYSTICK Initialization
+	NVIC_ST_CTRL_R = 0;                   											// disable SysTick during setup
+  NVIC_ST_RELOAD_R = 2666667;  																// reload value for interrupts at 30 Hz (0.03 s)
+  NVIC_ST_CURRENT_R = 0;                											// any write to current clears it
+  NVIC_SYS_PRI3_R = (NVIC_SYS_PRI3_R&0x00FFFFFF)|0x20000000;  // priority 1   
+  NVIC_ST_CTRL_R = 0x0007;																		// enable SysTick with core clock and interrupts
+	status = 0;
+}
+void SysTick_Handler(void){// every 33 ms
+		if (Switch_In()==0){
+			ADC_In89(ADCdata);
+			status = 1;//ADC input received
+			time--;
+		}
+		else 
+		{//pause game		
+			DisableInterrupts();
+			int m=0;
+			displaypause(time, lives, score);
+			while (m == 0){
+				m = Switch_In();
+			}
+			switch(m){
+				case 1: status = 2;//resumeGame
+					break;
+				case 2: 
+					status = 3;
+					break;//quit game
+			}
+		}//pause game
+}
 
-int playgame(int difficulty){
+/*void pauseGame (void){
+	if (status == 2){
+		DisableInterrupts();
+		int m=0;
+		displaypause(time, lives, score);
+		while (m == 0){
+			m = Switch_In();
+		}
+		switch(m){
+			case 1: status = 3;//resumeGame
+				break;
+			case 2: 
+				status = 4;//quit game
+		}
+	}
+}*/
+void initgame(int diff, mapIcons map[ROW][COL]){
 		lives = 3;
-		winlose = -1;//0 = lose, 1 = win
 		flagcount = 0;
 		score = 0;
-		mapIcons map[ROW][COL];
-		initMap(map,difficulty);
 	  Sound_Init();
 		SysTick_Init();
+		//Timer1_Init(pauseGame, 80000000/30);
+		initMap(map,diff);
+		time = 3600; //2 min to play each round
+		displayActors(diff);
+}
+int playgame(int difficulty){//returns score to main (or 0 if lose/quit)
+		delayTouch();
+		delay(100);//prevent bounce
+		mapIcons map[ROW][COL];
+		initgame(difficulty,map);
 		EnableInterrupts();
-		while (winlose==-1){
-			if(status){
-			displayActors();
+		while (1){
+			if(status==1){
+			displayActors(difficulty);
 			//displayradar();
 			//userinput
 			pig.direction = Convert(ADCdata);
@@ -458,27 +554,42 @@ int playgame(int difficulty){
 			//updateradar();
 			if(time == 0){
 				lives--;
+				time = 3600;
 				Sound_Chomp();
+				delay(500);
 				displayLives(lives,time); 
+				DisableInterrupts();
 				while(Switch_In() == 0){}
-				initMap(map,difficulty);
+				delayTouch();
+				resumeGame(map,difficulty);
+				delay(100);//prevent bounce
+				EnableInterrupts();
 			}
 			if(lives == 0){
-				winlose = 0;
+				DisableInterrupts();
 				displaylose(); 
 				while(Switch_In() == 0){}
-				return winlose;
+				return 0;
 			}
 			if (flagcount == FLAGS_TOTAL){
+				DisableInterrupts();
 				displaylevelwin(time/30, lives, score); 
-				score = score + time/30 + lives*100;
-				winlose = score;
+				score = score + time/30 + lives*10;
 				while(Switch_In() == 0){} 
-				return winlose;
+				return score;
 			}
 			status = 0;
 		}//if
+		if(status ==2){
+			resumeGame(map,difficulty);
+			delayTouch();
+			status = 0;
+			delay(100);//prevent bounce
+			EnableInterrupts();
+		}
+		if(status == 3){
+			return 0;
+		}
 	}//while
-	return -1;
 }
 

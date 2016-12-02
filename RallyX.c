@@ -59,13 +59,21 @@ int main(void){
 		//insert enum - for now, use int response
 		int response;
 		switch(m){
-			case 1: response = playgame(1); break;//level 1 difficulty
-			case 2: response = playgame(2); break;//level 2 difficulty
-			case 4: response = playgame(3); break;//level 3 difficulty
-			//case 3: displayexit(); break;
+			case 1: 
+				DisableInterrupts();
+				response = playgame(1); break;//level 1 difficulty
+			case 2: 
+				DisableInterrupts();
+				response = playgame(2); break;//level 2 difficulty
+			case 3: 
+				DisableInterrupts();
+				response = playgame(3); break;//level 3 difficulty
+			case 4:
+				displayInstructions(); break;//display instructions
 			default: break;
 		}//menu result
 		totalScore = response + totalScore;
+		delay(100);
 	}//while
 }//main
 
@@ -74,7 +82,7 @@ int main(void){
 
 uint32_t ADCvalue[2];
 char Pos;
-char ConvertTest(uint32_t input[2]){//CALIBRATE LATER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+char ConvertTest(uint32_t input[2]){
 	//data[0];//North/South (vert - PE5)
   //data[1];//East/West (horz - PE4)
 	char output = 0;
@@ -119,14 +127,18 @@ int mainSwitch(void){
 	uint32_t input, previous; 
 	previous = 0;
 	while(1){
+		ST7735_FillScreen(0);
 		ST7735_SetCursor(0,0);
-		ST7735_OutString("ON");
+		ST7735_OutString("ON\n");
 		input = Switch_In(); 
+		LCD_OutDec(input);
 		if(input&&(previous ==0)){ // just pressed 
 			switch(input){
 				case 1: ST7735_OutString("first button");break;
 				case 2: ST7735_OutString("second button");break;
-				case 4: ST7735_OutString("third button");break;
+				case 3: ST7735_OutString("third button");break;
+				case 4: ST7735_OutString("joystick button");break;
+				case 0: ST7735_OutString("no button");break;
 				default:break; 
 			}
 		} 
