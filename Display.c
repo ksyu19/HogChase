@@ -20,7 +20,7 @@
 #include "Switch.h"
 #include "Timer1.h"
 #include "tm4c123gh6pm.h"
-
+#include "Sound.h"
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
 
@@ -186,12 +186,12 @@ void displaypause(int time, int lives, int score){
 	ST7735_OutString("\n\nPress:\n 1: Resume Game\n 2: Quit\n    (Lose progress)");
 };
 int pigc, pigr, wolfc, wolfr, mail;
-void moveStory(void){
+void moveStoryWin(void){
 	pigc++;
 	wolfr++;
 	mail = 1;
 }
-void displayHouse(void){
+void displayStoryWin(void){
 	pigc = 0;
 	pigr = 7*16;
 	wolfc = 5*16;
@@ -199,12 +199,13 @@ void displayHouse(void){
 	mail = 0;
 	ST7735_FillScreen(0);            // set screen to black
 	ST7735_DrawBitmap(5*16,7*16+16,storyhouse,16,16); 
-	Timer1_Init(moveStory, 80000000/30);
+	Timer1_Init(moveStoryWin, 80000000/30);
 	EnableInterrupts();
 	while(pigc!=5*16){
 		if(mail){
 			ST7735_DrawBitmap(pigc,pigr+16,storypig,16,16); 
 			ST7735_DrawBitmap(wolfc,wolfr+16,storywolf,16,16); 
+			ST7735_DrawBitmap(5*16,7*16+16,storyhouse,16,16); 
 			mail = 0;
 		}
 	}
@@ -212,9 +213,99 @@ void displayHouse(void){
 	delay(500);
 	ST7735_FillScreen(0);            // set screen to black
 	ST7735_SetCursor(0,5);
-	ST7735_OutString("Hooray! You Win!!!\nPress any button\nto return to menu");
+	ST7735_OutString("You made it!!!\nPress any button\nto return to menu");
 	int input = 0;
 	while(input == 0){input = Switch_In();}
 	delayTouch();
 };
+int house;
+void moveStoryIntro(void){
+	wolfr++;
+	if (wolfr == 2*16-16){
+		house = 2;
+		Sound_Chomp();
+	}
+	if (wolfr == 4*16-16){
+		house = 3;
+		Sound_Chomp();
+	}
+	if (wolfr == 6*16-16){
+		house = 4;
+		Sound_Chomp();
+	}
+	if (wolfr >= 2*16-16){
+		if(pigr<4*16){
+			pigr=pigr+2;
+		}
+		else if(wolfr >= 4*16-16){
+			if(pigr<6*16){
+				pigr=pigr+2;
+			}
+			else if(wolfr >= 6*16-16&&pigr<10*16){
+				pigr=pigr+2;
+			}
+		}
+	}
+	mail = 1;
+}
+void movePigIntro(void){
+	pigr=pigr+2;
+	mail = 1;
+}
+void drawHousesIntro(void){
+	int x = 3*16+8;
+	switch(house){
+		case 1:
+			ST7735_DrawBitmap(x,2*16+16,storyhouse,16,16); 
+			ST7735_DrawBitmap(x,4*16+16,storyhouse,16,16); 
+			ST7735_DrawBitmap(x,6*16+16,storyhouse,16,16); 
+		break;
+		case 2:
+			ST7735_DrawBitmap(x,4*16+16,storyhouse,16,16); 
+			ST7735_DrawBitmap(x,6*16+16,storyhouse,16,16); 
+		break;
+		case 3:
+			ST7735_DrawBitmap(x,6*16+16,storyhouse,16,16); 
+		break;
+		case 4:break;
+	}
+}
+void displayStoryIntro(void){
+	Sound_Init();
+	pigc = 3*16+8;
+	pigr = 2*16;
+	wolfc = 3*16+8;
+	wolfr = 0;
+	mail = 0;
+	house = 1;
+	ST7735_FillScreen(0);            // set screen to black
+	drawHousesIntro();
+	Timer1_Init(moveStoryIntro, 80000000/30);
+	EnableInterrupts();
+	while(wolfr!=10*16){//off the screen
+		if(mail){
+			ST7735_DrawBitmap(pigc,pigr+16,storypig,16,16); 
+			ST7735_DrawBitmap(wolfc,wolfr+16,storywolf,16,16); 
+			drawHousesIntro();
+			mail = 0;
+		}
+	}
+	NVIC_DIS0_R = 1<<19;           //disable interrupts IRQ 19 in NVIC 
 
+	delay(500);
+	ST7735_FillScreen(0);            // set screen to black
+	pigr = 0;
+	mail = 0;
+	Timer1_Init(movePigIntro, 80000000/25);	
+		while(pigr<6*16){//middle of screen
+		if(mail){
+			ST7735_DrawBitmap(pigc,pigr+16,storypig,16,16); 
+			mail = 0;
+		}
+	}
+	ST7735_SetCursor(0,0);
+	ST7735_OutString("WELCOME TO HOGCHASE\n\nCollect materials to\nbuild a new house!\n\nPress any button\nto continue");
+	int input = 0;
+	while(input == 0){input = Switch_In();}
+	delayTouch();
+};

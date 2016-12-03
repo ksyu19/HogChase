@@ -52,6 +52,7 @@ int main(void){
   ADC_Init89();    			// initialize to sample ADC0
 	Switch_Init();
 	int totalScore = 0;
+	displayStoryIntro();
   while(1){
 		DisableInterrupts();
 		ST7735_FillScreen(0);            // set screen to black
@@ -83,7 +84,7 @@ int main(void){
 			}
 			if(m == 1){
 				totalScore = totalScore - 1500; 
-				displayHouse();
+				displayStoryWin();
 			}
 		}
 		delay(100);

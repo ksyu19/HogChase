@@ -8,4 +8,5 @@ void displaylose(void);
 void displayexit(void);
 void displayLives(int lives, int time);
 void displaypause(int time, int lives, int score);
-void displayHouse(void);
+void displayStoryWin(void);
+void displayStoryIntro(void);
