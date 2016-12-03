@@ -224,25 +224,28 @@ void moveStoryIntro(void){
 	if (wolfr == 2*16-16){
 		house = 2;
 		Sound_Chomp();
+		pigr = pigr+16;
 	}
 	if (wolfr == 4*16-16){
 		house = 3;
 		Sound_Chomp();
+		pigr = pigr+16;
 	}
 	if (wolfr == 6*16-16){
 		house = 4;
 		Sound_Chomp();
+		pigr = pigr+16;
 	}
 	if (wolfr >= 2*16-16){
 		if(pigr<4*16){
-			pigr=pigr+2;
+			pigr=pigr+1;
 		}
 		else if(wolfr >= 4*16-16){
 			if(pigr<6*16){
-				pigr=pigr+2;
+				pigr=pigr+1;
 			}
 			else if(wolfr >= 6*16-16&&pigr<10*16){
-				pigr=pigr+2;
+				pigr=pigr+1;
 			}
 		}
 	}

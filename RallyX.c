@@ -67,7 +67,9 @@ int main(void){
 			case 3: 
 				response = playgame(3); break;//level 3 difficulty
 			case 4:
-				displayInstructions(); break;//display instructions
+				displayInstructions(); 
+				response = 0;
+				break;//display instructions
 			default: break;
 		}//menu result
 		DisableInterrupts();
