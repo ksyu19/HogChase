@@ -71,6 +71,21 @@ int main(void){
 		}//menu result
 		DisableInterrupts();
 		totalScore = response + totalScore;
+		if (totalScore >=1500){
+			ST7735_FillScreen(0);            // set screen to black
+			ST7735_SetCursor(0,0);
+			ST7735_OutString("Total Score: ");
+			LCD_OutDec(totalScore);
+			ST7735_OutString("\n\nYou have enough\nmaterials to build\nyour house!\nPress 1 to build\nyour house (spend\n1500 points). Press\n2 to continue\nplaying.");
+			m = 0;
+			while(m!=1&&m!=2){
+				m = Switch_In();
+			}
+			if(m == 1){
+				totalScore = totalScore - 1500; 
+				displayHouse();
+			}
+		}
 		delay(100);
 	}//while
 }//main
