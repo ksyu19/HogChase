@@ -22,18 +22,6 @@ CONSTANTS, TYPEDEFS (ENUMS, STRUCTS)
 =====================================================================================================================================*/
 #define WOLVES_SIZE 3
 #define FLAGS_TOTAL 5
-typedef enum {NORTH,EAST,SOUTH,WEST,NONE} direction_t;
-typedef enum {PAUSE,RESUME,QUIT} buttons;
-/*typedef enum {
-	O,//open path
-	X,//closed path
-	A,//apple
-	//S,//straw
-	//T,//twigs
-	//B,//bricks
-	P,//pig
-	W//wolf
-}mapIcons;*/
 typedef struct actor{
 	int r;// r = -1 when actor doesn't exist
 	int c;
@@ -170,7 +158,8 @@ void initMap(mapIcons map[ROW][COL], int diff){
 	for (int i = f; i<FLAGS_TOTAL;i++){
 		Flags[i].r = -1;
 	}//flags that don't exist
-}//Only call this function to initialize map
+	time = 1800; //1 min to play
+}//Only call this function to initialize map (whenever you start game or lose a life)
 
 void displayActors(int diff){
 	//map[0][0] is the top left tile on the screen.
@@ -347,16 +336,18 @@ void collideWolves(actorType *wolf, mapIcons map[ROW][COL],int diff){
   int pigl =  pig.c+2;
 	if(wolftop<=pigbot&&wolfbot>=pigtop&&wolfr>=pigl&&wolfl<=pigr)
 	{
-		lives--;
 		Sound_Chomp();
-		delay(500);
+		//delay(500);
+		NVIC_ST_CTRL_R = 0; // disable SysTick
+		Music_Stop();
+		lives--;
 		displayLives(lives,time); 
-		DisableInterrupts();
 		while(Switch_In() == 0){}
 		delayTouch();
-		delay(100);//prevent bounce
-		EnableInterrupts();
+		delay(500);//prevent bounce
+		NVIC_ST_CTRL_R = 0x0007; // enable SysTick
 		initMap(map,diff);
+		Sound_Music();
 	}
 }
 
@@ -382,9 +373,9 @@ void collideFlags(mapIcons map[ROW][COL]){
 	if (map[pigr][pigc] == S||map[pigr][pigc] == T||map[pigr][pigc] == B) {
 		flagcount++;
 		//increment score based on flags
-		if (map[pigr][pigc] == S){score = score+10;}
-		if (map[pigr][pigc] == T){score = score+20;}
-		if (map[pigr][pigc] == B){score = score+30;}
+		if (map[pigr][pigc] == S){score = score+25;}
+		if (map[pigr][pigc] == T){score = score+50;}
+		if (map[pigr][pigc] == B){score = score+75;}
 		map[pigr][pigc] = O;
 		ST7735_DrawBitmap(pigc*16,pigr*16+16,grass,16,16); 
 		for (int k = 0; k<FLAGS_TOTAL;k++){
@@ -398,9 +389,9 @@ void collideFlags(mapIcons map[ROW][COL]){
 	if (map[pigr2][pigc] == S||map[pigr2][pigc] == T||map[pigr2][pigc] == B) {
 		flagcount++;
 		//increment score based on flags
-		if (map[pigr2][pigc] == S){score = score+10;}
-		if (map[pigr2][pigc] == T){score = score+20;}
-		if (map[pigr2][pigc] == B){score = score+30;}
+		if (map[pigr2][pigc] == S){score = score+25;}
+		if (map[pigr2][pigc] == T){score = score+50;}
+		if (map[pigr2][pigc] == B){score = score+75;}
 		map[pigr2][pigc] = O;
 		ST7735_DrawBitmap(pigc*16,pigr2*16+16,grass,16,16); 
 		for (int k = 0; k<FLAGS_TOTAL;k++){
@@ -414,9 +405,9 @@ void collideFlags(mapIcons map[ROW][COL]){
 	if (map[pigr][pigc2] == S||map[pigr][pigc2] == T||map[pigr][pigc2] == B) {
 		flagcount++;
 		//increment score based on flags
-		if (map[pigr][pigc2] == S){score = score+10;}
-		if (map[pigr][pigc2] == T){score = score+20;}
-		if (map[pigr][pigc2] == B){score = score+30;}
+		if (map[pigr][pigc2] == S){score = score+25;}
+		if (map[pigr][pigc2] == T){score = score+50;}
+		if (map[pigr][pigc2] == B){score = score+75;}
 		map[pigr][pigc2] = O;
 		ST7735_DrawBitmap(pigc2*16,pigr*16+16,grass,16,16); 
 		for (int k = 0; k<FLAGS_TOTAL;k++){
@@ -430,9 +421,9 @@ void collideFlags(mapIcons map[ROW][COL]){
 	if (map[pigr2][pigc2] == S||map[pigr2][pigc2] == T||map[pigr2][pigc2] == B) {
 		flagcount++;
 		//increment score based on flags
-		if (map[pigr2][pigc2] == S){score = score+10;}
-		if (map[pigr2][pigc2] == T){score = score+20;}
-		if (map[pigr2][pigc2] == B){score = score+30;}
+		if (map[pigr2][pigc2] == S){score = score+25;}
+		if (map[pigr2][pigc2] == T){score = score+50;}
+		if (map[pigr2][pigc2] == B){score = score+75;}
 		map[pigr2][pigc2] = O;
 		ST7735_DrawBitmap(pigc2*16,pigr2*16+16,grass,16,16); 
 		for (int k = 0; k<FLAGS_TOTAL;k++){
@@ -486,10 +477,11 @@ void SysTick_Handler(void){// every 33 ms
 		}
 		else 
 		{//pause game		
-			DisableInterrupts();
+			NVIC_ST_CTRL_R = 0; // disable SysTick
+			Music_Stop();
 			int m=0;
 			displaypause(time, lives, score);
-			while (m == 0){
+			while (m != 1 && m != 2 ){
 				m = Switch_In();
 			}
 			switch(m){
@@ -502,31 +494,13 @@ void SysTick_Handler(void){// every 33 ms
 		}//pause game
 }
 
-/*void pauseGame (void){
-	if (status == 2){
-		DisableInterrupts();
-		int m=0;
-		displaypause(time, lives, score);
-		while (m == 0){
-			m = Switch_In();
-		}
-		switch(m){
-			case 1: status = 3;//resumeGame
-				break;
-			case 2: 
-				status = 4;//quit game
-		}
-	}
-}*/
 void initgame(int diff, mapIcons map[ROW][COL]){
 		lives = 3;
 		flagcount = 0;
 		score = 0;
 	  Sound_Init();
 		SysTick_Init();
-		//Timer1_Init(pauseGame, 80000000/30);
 		initMap(map,diff);
-		time = 3600; //2 min to play each round
 		displayActors(diff);
 }
 int playgame(int difficulty){//returns score to main (or 0 if lose/quit)
@@ -535,6 +509,7 @@ int playgame(int difficulty){//returns score to main (or 0 if lose/quit)
 		mapIcons map[ROW][COL];
 		initgame(difficulty,map);
 		EnableInterrupts();
+		Sound_Music();
 		while (1){
 			if(status==1){
 			displayActors(difficulty);
@@ -553,28 +528,33 @@ int playgame(int difficulty){//returns score to main (or 0 if lose/quit)
 			collideFlags(map);
 			//updateradar();
 			if(time == 0){
-				lives--;
-				time = 3600;
 				Sound_Chomp();
-				delay(500);
+				//delay(500);
+				lives--;
+				NVIC_ST_CTRL_R = 0; // disable SysTick
+				Music_Stop();
 				displayLives(lives,time); 
-				DisableInterrupts();
 				while(Switch_In() == 0){}
 				delayTouch();
-				resumeGame(map,difficulty);
-				delay(100);//prevent bounce
-				EnableInterrupts();
+				initMap(map,difficulty);
+				delay(500);//prevent bounce
+				NVIC_ST_CTRL_R = 0x0007; // enable SysTick
+				Sound_Music();
 			}
 			if(lives == 0){
-				DisableInterrupts();
+				//delay(500);//finish playing last chomp sound
+				NVIC_ST_CTRL_R = 0; // disable SysTick
+				Music_Stop();
 				displaylose(); 
 				while(Switch_In() == 0){}
 				return 0;
 			}
 			if (flagcount == FLAGS_TOTAL){
-				DisableInterrupts();
+				//delay(400);//finish playing last flag sound
+				NVIC_ST_CTRL_R = 0; // disable SysTick
+				Music_Stop();
 				displaylevelwin(time/30, lives, score); 
-				score = score + time/30 + lives*10;
+				score = score + time/30 + lives*60;
 				while(Switch_In() == 0){} 
 				return score;
 			}
@@ -585,7 +565,8 @@ int playgame(int difficulty){//returns score to main (or 0 if lose/quit)
 			delayTouch();
 			status = 0;
 			delay(100);//prevent bounce
-			EnableInterrupts();
+			NVIC_ST_CTRL_R = 0x0007; // enable SysTick
+			Sound_Music();
 		}
 		if(status == 3){
 			return 0;

@@ -36,9 +36,9 @@ void displayInstructions(){
 	//Screen 1:
 	char second[] = "Navigate the pig\nwith the joystick to\ncollect materials\nfor a new house.\n\nDuring play, press\nany button to pause.\n\n<1:Back, 2:Next>";
 	//Screen 2:
-	char third[] = "You have 3 lives to\ncomplete each level.\nLevels are completed\nonce you obtain 5\nitems. Running into \nwolves and holes\nwill cost a life.\nYou will also lose a\nlife every 2 min.\n\n<1:Back, 2:Next>";
+	char third[] = "You have 3 lives to\ncomplete each level.\nLevels are completed\nonce you obtain 5\nitems. Running into \nwolves and holes\nwill cost a life.\nYou will also lose a\nlife every 1 min.\n\n<1:Back, 2:Next>";
 	//Screen 3:
-	char fourth[] = "Points:\nStraw (Level 1) =\n10 points\nTwigs (Level 2) =\n20 points\nBrick (Level 3) =\n30 points\nTime Bonus =\n1 point/sec left\nLives Bonus =\n10 points/life left\n\n<1:Back, 2:Menu>";
+	char fourth[] = "Points:\nStraw (Level 1) =\n25 points\nTwigs (Level 2) =\n50 points\nBrick (Level 3) =\n75 points\nTime Bonus =\n1 point/sec left\nLives Bonus =\n60 points/life left\n\n<1:Back, 2:Menu>";
 	typedef struct infoFSM{
 		char *output;
 		int next[2];
@@ -74,10 +74,10 @@ void displaylevelwin(int time, int lives, int score){
 	ST7735_OutString("\nTime Bonus: ");
 	LCD_OutDec(time);
 	ST7735_OutString("\nLives Bonus: ");
-	LCD_OutDec(lives*10);
+	LCD_OutDec(lives*60);
 	ST7735_OutString("\n\nLevel Score: ");
-	LCD_OutDec(score+time+lives*100);
-	ST7735_OutString("\n\n\nPress any button\nto return to menu.");
+	LCD_OutDec(score+time+lives*60);
+	ST7735_OutString("\n\nPress any button\nto return to menu.");
 };
 void displayoverallwin(void){
 };

@@ -51,27 +51,25 @@ int main(void){
 	ST7735_InitR(INITR_REDTAB);
   ADC_Init89();    			// initialize to sample ADC0
 	Switch_Init();
-  //EnableInterrupts();
 	int totalScore = 0;
   while(1){
+		DisableInterrupts();
 		ST7735_FillScreen(0);            // set screen to black
 		m = menu(totalScore);
 		//insert enum - for now, use int response
 		int response;
 		switch(m){
 			case 1: 
-				DisableInterrupts();
 				response = playgame(1); break;//level 1 difficulty
 			case 2: 
-				DisableInterrupts();
 				response = playgame(2); break;//level 2 difficulty
 			case 3: 
-				DisableInterrupts();
 				response = playgame(3); break;//level 3 difficulty
 			case 4:
 				displayInstructions(); break;//display instructions
 			default: break;
 		}//menu result
+		DisableInterrupts();
 		totalScore = response + totalScore;
 		delay(100);
 	}//while
@@ -184,7 +182,6 @@ int main(void){
 	Switch_Init();
   Sound_Init();
 	statusTest = 0;
-	int i = 0;
 	uint32_t input, previous; 
 	previous = 0;
 	EnableInterrupts();
@@ -194,7 +191,8 @@ int main(void){
 			switch(input){
 				case 1: Sound_Flag();break;
 				case 2: Sound_Chomp();break;
-				//case 4: Sound_Round_Clear();break;
+				case 3: Sound_Music();break;
+				case 4: Music_Stop();break;
 				default:break; 
 			}
 		} 

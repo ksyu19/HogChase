@@ -12,6 +12,7 @@ void Music_Play(const uint8_t *pt, uint32_t count);
 void Music_Stop(void);
 void Sound_Round_Clear(void);
 void Sound_Chomp(void);
+void Sound_Pacman(void);
 void Sound_Flag(void);
 void Sound_Music(void);
 

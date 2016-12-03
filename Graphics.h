@@ -338,6 +338,7 @@ typedef enum {
 	T,//twig
 	S//straw
 }mapIcons;
+typedef enum {NORTH,EAST,SOUTH,WEST,NONE} direction_t;
 const short ROW = 10;
 const short COL = 8;
 
