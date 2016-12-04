@@ -444,16 +444,16 @@ direction_t Convert(uint32_t input[2]){
 	//data[0];//North/South (vert - PE5)
   //data[1];//East/West (horz - PE4)
 	direction_t output = NONE;
-	if (4096>input[0]&&input[0]>=3500){
+	if (4096>input[0]&&input[0]>=3000){
 		output = NORTH;
 	}
-	else if (500>=input[0]&&input[0]>0){
+	else if (1000>=input[0]&&input[0]>0){
 		output = SOUTH;
 	}
-	else if (500>=input[1]&&input[1]>0){
+	else if (1000>=input[1]&&input[1]>0){
 		output = EAST;
 	}
-	else if (4096>input[1]&&input[1]>=3500){
+	else if (4096>input[1]&&input[1]>=3000){
 		output = WEST;
 	}
   return output;

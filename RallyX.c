@@ -94,24 +94,24 @@ int main(void){
 }//main
 
 //ADC DEBUGGING
-/*
 
+/*
 uint32_t ADCvalue[2];
 char Pos;
 char ConvertTest(uint32_t input[2]){
 	//data[0];//North/South (vert - PE5)
   //data[1];//East/West (horz - PE4)
 	char output = 0;
-	if (4096>input[0]&&input[0]>=3500){
+	if (4096>input[0]&&input[0]>=3000){
 		output = 'N';
 	}
-	else if (500>=input[0]&&input[0]>0){
+	else if (1000>=input[0]&&input[0]>0){
 		output = 'S';
 	}
-	else if (500>=input[1]&&input[1]>0){
+	else if (1000>=input[1]&&input[1]>0){
 		output = 'E';
 	}
-	else if (4096>input[1]&&input[1]>=3500){
+	else if (4096>input[1]&&input[1]>=3000){
 		output = 'W';
 	}
   return output;
@@ -119,16 +119,17 @@ char ConvertTest(uint32_t input[2]){
 int main(void){ 
   TExaS_Init();         // Bus clock is 80 MHz 
   ST7735_InitR(INITR_REDTAB); 
-  PortF_Init();
   ADC_Init89();         // turn on ADC, set channel to 1
   while(1){  
 		ADC_In89(ADCvalue);  // sample 12-bit channel 1
     Pos = ConvertTest(ADCvalue); 
     ST7735_SetCursor(0,0);
 		ST7735_OutString(&Pos);
-    //LCD_OutDec(ADCvalue[0]); ST7735_OutString("vert "); //print vertical
+		ST7735_SetCursor(0,2);
+    LCD_OutDec(ADCvalue[0]); //ST7735_OutString("vert "); //print vertical
     //ST7735_SetCursor(6,0);
-		//LCD_OutDec(ADCvalue[1]); ST7735_OutString("horiz ");  //print horizontal
+	  ST7735_SetCursor(0,4);
+		LCD_OutDec(ADCvalue[1]); //ST7735_OutString("horiz ");  //print horizontal
 		for(int i = 0; i<266667; i++){
 		}
   }
