@@ -132,7 +132,7 @@ void displayInstructions(){
 	//Screen 1:
 	char second[] = "Navigate the pig\nwith the joystick to\ncollect materials\nfor a new house.\n\nDuring play, press\nany button to pause.\n\n<1:Back, 2:Next>";
 	//Screen 2:
-	char third[] = "You have 3 lives to\ncomplete each level.\nLevels are completed\nonce you obtain 5\nitems. Running into \nwolves and holes\nwill cost a life.\nYou will also lose a\nlife every 1 min.\n\n<1:Back, 2:Next>";
+	char third[] = "You have 3 lives to\ncomplete each level.\nYou can earn a life\nby eating an apple.\nLevels are completed\nonce you obtain 5\nitems. Running into \nwolves and holes\nwill cost a life.\nYou will also lose a\nlife every 1 min.\n\n<1:Back, 2:Next>";
 	//Screen 3:
 	char fourth[] = "Points:\nStraw (Level 1) =\n25 points\nTwigs (Level 2) =\n50 points\nBrick (Level 3) =\n75 points\nTime Bonus =\n1 point/sec left\nLives Bonus =\n60 points/life left\n\nReach 1500 points:\nBuild a house!\n\n<1:Back, 2:Menu>";
 	typedef struct infoFSM{

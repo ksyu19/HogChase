@@ -42,6 +42,8 @@ int lives;
 int flagcount;
 int time;
 int score;
+int start;
+flagType bonus;
 /*===================================================================================================================================
 INITIALIZATION FUNCTIONS (and helpers)
 =====================================================================================================================================*/
@@ -52,7 +54,7 @@ void initMap(mapIcons map[ROW][COL], int diff){
 	int i, j, w, f;
 	w = 0;
 	f = 0;
-	if (lives ==3&&diff == 1){
+	if (start == 1&&diff == 1){
 		mapIcons map1[ROW][COL]= { 
 			{P,O,O,X,X,O,O,S},
 			{O,X,O,X,X,O,X,O},
@@ -72,12 +74,12 @@ void initMap(mapIcons map[ROW][COL], int diff){
 			}	
 		}
 	}//level1
-	if (lives ==3&&diff == 2){
+	if (start == 1&&diff == 2){
 		mapIcons map2[ROW][COL]={
 			{P,O,O,X,X,O,O,T},
 			{O,X,O,X,X,O,X,O},
 			{O,X,O,X,X,O,X,O},
-			{O,O,O,O,O,O,O,O},
+			{O,O,O,O,A,O,O,O},
 			{O,O,X,X,X,X,O,O},
 			{O,O,O,O,O,O,O,O},
 			{X,X,X,O,O,X,X,X},
@@ -92,7 +94,7 @@ void initMap(mapIcons map[ROW][COL], int diff){
 			}	
 		}
 	}//level2
-	if (lives ==3&&diff == 3){
+	if (start ==1 &&diff == 3){
 		mapIcons map3[ROW][COL]= { 
 			{B,O,O,O,O,O,P,O},
 			{O,X,X,O,O,X,X,O},
@@ -101,7 +103,7 @@ void initMap(mapIcons map[ROW][COL], int diff){
 			{O,O,X,B,W,X,O,O},
 			{X,O,X,O,O,X,O,X},
 			{O,O,X,O,O,X,O,O},
-			{O,O,O,O,O,W,O,O},
+			{O,O,A,O,O,W,O,O},
 			{O,O,X,O,O,O,X,O},
 			{X,B,O,O,X,O,B,O}
 		};
@@ -112,6 +114,7 @@ void initMap(mapIcons map[ROW][COL], int diff){
 			}	
 		}
 	}//level3
+	bonus.r = -1; //no bonus flag
 	for (i = 0; i < ROW; i++){
 		for (j = 0; j < COL; j++){
 				if (map[i][j] == X)
@@ -129,6 +132,13 @@ void initMap(mapIcons map[ROW][COL], int diff){
 				else if (map[i][j] == H)
 				{
 					ST7735_DrawBitmap(j*16,(i+1)*16,hole,16,16);
+				}
+				else if (map[i][j] == A)
+				{
+					//draw bonus "apple"
+					//ST7735_DrawBitmap(j*16,(i+1)*16,apple,16,16);
+					bonus.r = i*16;
+					bonus.c = j*16;
 				}
 				else if (map[i][j] == P)
 				{
@@ -159,6 +169,7 @@ void initMap(mapIcons map[ROW][COL], int diff){
 		Flags[i].r = -1;
 	}//flags that don't exist
 	time = 1800; //1 min to play
+
 }//Only call this function to initialize map (whenever you start game or lose a life)
 
 void displayActors(int diff){
@@ -178,6 +189,9 @@ void displayActors(int diff){
 					ST7735_DrawBitmap(Flags[i].c,Flags[i].r+16,brick,16,16);
 			}
 		}
+	}
+	if (bonus.r!=-1){
+			ST7735_DrawBitmap(bonus.c,bonus.r+16,apple,16,16);
 	}
 	ST7735_DrawBitmap(pig.c,pig.r+16,pigFront,16,16);
 	for (int i = 0; i<WOLVES_SIZE; i++){
@@ -435,7 +449,55 @@ void collideFlags(mapIcons map[ROW][COL]){
 		Sound_Flag();
 	}
 }
-
+void collideBonus(mapIcons map[ROW][COL]){
+	int pigr = pig.r / 16;
+	int pigr2;
+	if (pig.r % 16 != 0) {
+		pigr2 = pigr + 1;
+	}
+	else { 
+		pigr2 = pigr; 
+	}
+	
+	int pigc = pig.c / 16;
+	int pigc2;
+	if (pig.c % 16 != 0) {
+		pigc2 = pigc + 1;
+	}
+	else { 
+		pigc2 = pigc; 
+	}
+	
+	if (map[pigr][pigc] == A) {
+		//increment lives
+		lives++;
+		map[pigr][pigc] = O;
+		ST7735_DrawBitmap(pigc*16,pigr*16+16,grass,16,16); 
+		bonus.r = -1;
+		Sound_Flag();
+	}
+	if (map[pigr2][pigc] == A) {
+		lives++;
+		map[pigr2][pigc] = O;
+		ST7735_DrawBitmap(pigc*16,pigr2*16+16,grass,16,16); 
+		bonus.r = -1;
+		Sound_Flag();
+	}
+	if (map[pigr][pigc2] == A) {
+		lives++;
+		map[pigr][pigc2] = O;
+		ST7735_DrawBitmap(pigc2*16,pigr*16+16,grass,16,16); 
+		bonus.r = -1;
+		Sound_Flag();
+	}
+	if (map[pigr2][pigc2] == A) {
+		lives++;
+		map[pigr2][pigc2] = O;
+		ST7735_DrawBitmap(pigc2*16,pigr2*16+16,grass,16,16); 
+		bonus.r = -1;
+		Sound_Flag();
+	}
+}
 void updateradar(){
 	//update the radar!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//if flag[i] == -1, then do not display
@@ -507,7 +569,9 @@ int playgame(int difficulty){//returns score to main (or 0 if lose/quit)
 		delayTouch();
 		delay(100);//prevent bounce
 		mapIcons map[ROW][COL];
+		start = 1;
 		initgame(difficulty,map);
+		start = 0;
 		EnableInterrupts();
 		Sound_Music();
 		while (1){
@@ -526,6 +590,7 @@ int playgame(int difficulty){//returns score to main (or 0 if lose/quit)
 				}
 			}
 			collideFlags(map);
+			collideBonus(map);
 			//updateradar();
 			if(time == 0){
 				Sound_Chomp();
